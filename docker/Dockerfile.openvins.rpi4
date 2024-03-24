@@ -1,0 +1,103 @@
+# Dockerfile for setting up d2dtracker dependecies
+
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+
+
+# Avoid setup.py and easy_install deprecation warnings caused by colcon and setuptools
+# https://github.com/colcon/colcon-core/issues/454
+ENV PYTHONWARNINGS=ignore:::setuptools.command.install,ignore:::setuptools.command.easy_install,ignore:::pkg_resources
+RUN echo "Warning: Using the PYTHONWARNINGS environment variable to silence setup.py and easy_install deprecation warnings caused by colcon"
+
+
+
+# # Fundamentals
+RUN apt-get update && apt-get install -y \
+    bash-completion \
+    nano \
+    build-essential \
+    curl \
+    git \
+    iputils-ping \
+    lsb-release \
+    sudo \
+    tar \
+    unzip \
+    vim \
+    wget \
+    libgoogle-glog-dev \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+
+
+# # Python basics
+RUN apt-get update && apt-get install -y \
+        python3-dev \
+        python3-flake8 \
+        python3-pip \
+        python3-pytest-cov \
+        python-is-python3 \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# # Set environment variables
+ENV OMP_NUM_THREADS=1
+
+#
+# Missing Net tools
+RUN apt update \
+    && apt install -y \
+    net-tools \
+    iputils-ping \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+#
+# Dependencies for Arducam
+# Ref: https://docs.arducam.com/Nvidia-Jetson-Camera/Multi-Camera-CamArray/quick-start/
+#
+RUN apt update \
+    && apt install -y v4l-utils \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+RUN pip3 install v4l2-fix
+
+# Copy middleware profiles
+RUN mkdir -p /usr/local/share/middleware_profiles
+COPY middleware_profiles/*profile.xml /usr/local/share/middleware_profiles/
+
+
+#
+# OpenVins depndencies
+#
+RUN apt-get update && apt-get install -y \
+    libeigen3-dev \
+    libboost-all-dev \
+    libceres-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+RUN pip3 install future
+
+# Setup non-root d2d user
+ARG USERNAME=vio
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+
+# Create the 'd2d' user if not already exists
+RUN if [ ! $(getent passwd ${USERNAME}) ]; then \
+        groupadd --gid ${USER_GID} ${USERNAME} ; \
+        useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} ; \
+    fi
+
+# Update 'vio' user
+RUN echo ${USERNAME} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${USERNAME} \
+    && adduser ${USERNAME} video && adduser ${USERNAME} plugdev && adduser ${USERNAME} sudo
+
+
+CMD ["/bin/bash"]
