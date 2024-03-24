@@ -44,8 +44,8 @@ if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume" ]; then
     print_info "Creating container's shared volume: $HOME/${CONTAINER_NAME}_shared_volume" && sleep 1
     mkdir $HOME/${CONTAINER_NAME}_shared_volume
 fi
-# print_info "copying config.sh to container shared volume at ${HOME}/${CONTAINER_NAME}_shared_volume" && sleep 1
-# cp $ROOT/scripts/config.sh $HOME/${CONTAINER_NAME}_shared_volume/
+print_info "copying config.sh to container shared volume at ${HOME}/${CONTAINER_NAME}_shared_volume" && sleep 1
+cp $ROOT/scripts/config.sh $HOME/${CONTAINER_NAME}_shared_volume/
 
 
 #
