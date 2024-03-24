@@ -36,15 +36,7 @@ BASE_NAME="mzahana/openvins_rpi:rpi4"
 CONTAINER_NAME="openvins-container"
 
 
-CMD="export DEV_DIR=\$HOME/shared_volume && \
-        if [[ -f "\$HOME/shared_volume/ros2_ws/install/setup.bash" ]]; then
-            source \$HOME/shared_volume/ros2_ws/install/setup.bash
-        fi && \
-        if [[ -f "\$HOME/shared_volume/config.sh" ]]; then
-            source \$HOME/shared_volume/config.sh
-        fi"
-
-CMD="$CMD && /bin/bash"
+CMD="/bin/bash"
 
 if [ "$(docker ps -aq -f name=${CONTAINER_NAME})" ]; then
     if [ "$(docker ps -aq -f status=exited -f name=${CONTAINER_NAME})" ]; then
@@ -68,19 +60,7 @@ DOCKER_ARGS+=("-v /etc/localtime:/etc/localtime:ro")
 
 
 # Custom command to run after logging into the container
-CMD="export DEV_DIR=\$HOME/shared_volume && \
-        if [ ! -d "\$HOME/shared_volume/ros2_ws" ]; then
-            mkdir -p \$HOME/shared_volume/ros2_ws/src
-        fi && \
-        if [ -d "\$HOME/shared_volume/ros2_ws/install" ]; then
-            source \$HOME/shared_volume/ros2_ws/install/setup.bash
-        fi && \
-        if [[ -f "\$HOME/shared_volume/config.sh" ]]; then
-            source \$HOME/shared_volume/config.sh
-        fi"
-
-
-CMD="$CMD && /bin/bash"
+CMD="/bin/bash"
 
 HOST_DEV_DIR=$HOME/${CONTAINER_NAME}_shared_volume
 if [ ! -d "$HOST_DEV_DIR" ]; then

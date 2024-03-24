@@ -51,19 +51,19 @@ if ! grep -qF "$line_to_check" "$bashrc_file"; then
 fi
 
 bashrc_file="$HOME/.bashrc"
-line_to_check="alias cb='colcon build'"
+line_to_check="alias cb='colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release'"
 if ! grep -qF "$line_to_check" "$bashrc_file"; then
     echo "$line_to_check" >> "$bashrc_file"
 fi
 
 bashrc_file="$HOME/.bashrc"
-line_to_check="alias cbs='colcon  build --packages-select'"
+line_to_check="alias cbs='colcon  build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select'"
 if ! grep -qF "$line_to_check" "$bashrc_file"; then
     echo "$line_to_check" >> "$bashrc_file"
 fi
 
 bashrc_file="$HOME/.bashrc"
-line_to_check="alias cbupto='colcon  build --packages-up-to'"
+line_to_check="alias cbupto='colcon  build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to'"
 if ! grep -qF "$line_to_check" "$bashrc_file"; then
     echo "$line_to_check" >> "$bashrc_file"
 fi
