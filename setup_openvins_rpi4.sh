@@ -39,7 +39,7 @@ fi
 
 source $HOME/.bashrc
 
-CONTAINER_NAME="vins-container"
+CONTAINER_NAME="openvins-container"
 if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume" ]; then
     print_info "Creating container's shared volume: $HOME/${CONTAINER_NAME}_shared_volume" && sleep 1
     mkdir $HOME/${CONTAINER_NAME}_shared_volume
@@ -153,17 +153,17 @@ else
 fi
 
 bashrc_file="$HOME/.bashrc"
-line_to_check="alias vins_container='. $ROOT/scripts/run_openvins.sh'"
+line_to_check="alias openvins_container='. $ROOT/scripts/run_openvins.sh'"
 
 if ! grep -qF "$line_to_check" "$bashrc_file"; then
     echo "$line_to_check" >> "$bashrc_file"
-    print_info "vins_container alias added to .bashrc file."
+    print_info "openvins_container alias added to .bashrc file."
 else
-    print_warning "vins_container alias already exists in .bashrc file. No changes made."
+    print_warning "openvins_container alias already exists in .bashrc file. No changes made."
 fi
 
-echo "You can execute " && print_info "vins_container " && echo "to start the vins-container"
-print_warning "If this is the first time you setup vins-container on Raspberry pi, enter the container and build the ros2_ws wokspace"
+echo "You can execute " && print_info "openvins_container " && echo "to start the openvins-container"
+print_warning "If this is the first time you setup openvins-container on Raspberry pi, enter the container and build the ros2_ws wokspace"
 print_warning "You need to reboot your RPi"
 print_info "DONE!"
 cd $HOME
