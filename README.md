@@ -15,7 +15,7 @@ This is tested onm Raspberry Pi 4 with bookworm OS
 * Inside the container, `source ~/shared_volume/config.sh`
 * Build the `~/shared_volume/ros2_ws` inside the container. You may need to use
     ```bash
-    colcon build  --parallel-workers 1 --executor sequential --cmake-args -DCMAKE_BUILD_TYPE=Release
+    MAKEFLAGS="-j1 -l1" colcon build --executor sequential --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
 * You will need to  calibrate your camera-imu setup using Kalibr tool
 * Place the calibratio Yaml files inside the shared volume
