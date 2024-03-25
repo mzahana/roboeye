@@ -72,8 +72,30 @@ else
 fi
 print_info "patching ROS2Visualizer.h ..." && sleep 1
 cp $ROOT/docker/patches/ROS2Visualizer.h $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/open_vins/ov_msckf/src/ros/
-####################### Done cloneing open_vins #####################
 
+#
+# ros2_mpu6050_driver
+#
+print_info "Cloning ros2_mpu6050_driver ..." && sleep 1
+if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/ros2_mpu6050_driver" ];then
+    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src
+    git clone https://github.com/mzahana/ros2_mpu6050_driver.git
+else
+    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/ros2_mpu6050_driver
+    git pull origin main
+fi
+
+#
+# arducam_ros2
+#
+print_info "Cloning arducam_ros2 ..." && sleep 1
+if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/arducam_ros2" ];then
+    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src
+    git clone https://github.com/mzahana/arducam_ros2.git
+else
+    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/arducam_ros2
+    git pull origin main
+fi
 
 #
 # topic_tools
@@ -84,7 +106,6 @@ if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/topic_tools" ]; the
     git clone -b humble https://github.com/ros-tooling/topic_tools.git
 fi
 
-####################### Done with topic_tools #####################
 
 
 
