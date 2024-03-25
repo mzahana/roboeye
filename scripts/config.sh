@@ -68,5 +68,7 @@ if ! grep -qF "$line_to_check" "$bashrc_file"; then
     echo "$line_to_check" >> "$bashrc_file"
 fi
 
+# Give read/write access to i2c ports
+sudo chmod +777 /dev/i2c-*
 
 source $HOME/.bashrc

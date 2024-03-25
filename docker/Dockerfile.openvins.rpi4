@@ -82,6 +82,13 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip3 install future
 
+#
+# i2c libraries
+#
+ RUN apt-get update && apt-get install -y \
+        i2c-tools \
+        libi2c-dev
+
 # Setup non-root d2d user
 ARG USERNAME=vio
 ARG USER_UID=1000
