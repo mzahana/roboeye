@@ -1,87 +1,57 @@
 #!/bin/bash -e
 
-USERNAME=vio
-
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $ROOT/utils/print_color.sh
 
+print_info "Setting up ROS 2 humble on Raspberry Pi 4."
+print_warning "This may take up to 2.5 hours on Raspberry Pi 4 with 4GB RAM"
+sleep 2
 
-# Define the image name and tag
-IMAGE_NAME="mzahana/openvins_rpi"
-TAG="rpi4"
-FULL_IMAGE_NAME="$IMAGE_NAME:$TAG"
-
-# Check if the image already exists locally
-#docker images | grep "$IMAGE_NAME" | grep "$TAG" > /dev/null 2>&1
-
-if [[ "$FORCE_BUILD" == "true" ]]; then
-    print_info "FORCE_BUILD: Building $FULL_IMAGE_NAME ..."
-	cd $ROOT/docker && make openvins-rpi4 UNAME="${USERNAME}" USER_ID=`id -u` U_GID=`id -g`
-else
-	# $? is a special variable that holds the exit status of the last command executed
-	if docker images | grep "$IMAGE_NAME" | grep "$TAG" > /dev/null 2>&1; then
-	  print_info "Image $FULL_IMAGE_NAME already exists locally."
-	else
-	    # Try to pull the image
-	    print_info "Trying to pull $FULL_IMAGE_NAME"
-	    #docker pull $FULL_IMAGE_NAME
-
-	    # Check if the pull was successful
-	    if docker pull $FULL_IMAGE_NAME; then
-		    print_info "Successfully pulled $FULL_IMAGE_NAME"
-	    else
-            print_error "Failed to pull $FULL_IMAGE_NAME, building locally..."
-            print_info "Building mzahana/d2dtracker-jetson:r${L4T_VERSION} ..."
-            cd $ROOT/docker && make openvins-rpi4 UNAME="${USERNAME}" USER_ID=`id -u` U_GID=`id -g`
-	    fi
-	fi
+if [ ! -d "$HOME/ros2_humble" ]; then
+    print_info "Creating $HOME/ros2_humble workspace"
+    mkdir -p $HOME/ros2_humble/src
 fi
 
-source $HOME/.bashrc
+print_info "Installing some tools... " && sleep 1
+sudo apt install -y git colcon python3-rosdep2 vcstool wget python3-flake8-docstrings python3-pip python3-pytest-cov python3-flake8-blind-except python3-flake8-builtins python3-flake8-class-newline python3-flake8-comprehensions python3-flake8-deprecated python3-flake8-import-order python3-flake8-quotes python3-pytest-repeat python3-pytest-rerunfailures python3-vcstools libx11-dev libxrandr-dev libasio-dev libtinyxml2-dev
 
-CONTAINER_NAME="openvins-container"
-if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume" ]; then
-    print_info "Creating container's shared volume: $HOME/${CONTAINER_NAME}_shared_volume" && sleep 1
-    mkdir $HOME/${CONTAINER_NAME}_shared_volume
-fi
-print_info "copying config.sh to container shared volume at ${HOME}/${CONTAINER_NAME}_shared_volume" && sleep 1
-cp $ROOT/scripts/config.sh $HOME/${CONTAINER_NAME}_shared_volume/
+cd $HOME/ros2_humble
+vcs import --input https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos src
+sudo apt upgrade -y
+sudo rosdep init
+rosdep update
+rosdep install --from-paths src --ignore-src --rosdistro humble -y --skip-keys "rviz fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool"
+colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
 
-
-#
-# Create ros2_ws
-#
-if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws" ]; then
-    print_info "Creating ros2_ws in $HOME/${CONTAINER_NAME}_shared_volume" && sleep 1
-    mkdir $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws
-fi
-if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src" ]; then
-    mkdir $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src
+if [ ! -d "$HOME/vins_ws" ]; then
+    mkdir -p $HOME/vins_ws/src
 fi
 
+VINS_WS=$HOME/vins_ws
+VINS_WS_SRC=$HOME/vins_ws/src
 #
 # Cloning open_vins
 #
 print_info "Cloning open_vins ..." && sleep 1
-if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/open_vins" ];then
-    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src
+if [ ! -d "${VINS_WS_SRC}/open_vins" ];then
+    cd ${VINS_WS_SRC}
     git clone https://github.com/rpng/open_vins/
 else
-    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/open_vins
+    cd ${VINS_WS_SRC}/open_vins
     git pull origin master
 fi
 print_info "patching ROS2Visualizer.h ..." && sleep 1
-cp $ROOT/docker/patches/ROS2Visualizer.h $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/open_vins/ov_msckf/src/ros/
+cp $ROOT/docker/patches/ROS2Visualizer.h ${VINS_WS_SRC}/open_vins/ov_msckf/src/ros/
 
 #
 # ros2_mpu6050_driver
 #
 print_info "Cloning ros2_mpu6050_driver ..." && sleep 1
-if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/ros2_mpu6050_driver" ];then
-    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src
+if [ ! -d "${VINS_WS_SRC}/ros2_mpu6050_driver" ];then
+    cd ${VINS_WS_SRC}
     git clone https://github.com/mzahana/ros2_mpu6050_driver.git
 else
-    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/ros2_mpu6050_driver
+    cd ${VINS_WS_SRC}/ros2_mpu6050_driver
     git pull origin main
 fi
 
@@ -89,52 +59,19 @@ fi
 # arducam_ros2
 #
 print_info "Cloning arducam_ros2 ..." && sleep 1
-if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/arducam_ros2" ];then
-    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src
+if [ ! -d "${VINS_WS_SRC}/arducam_ros2" ];then
+    cd ${VINS_WS_SRC}
     git clone https://github.com/mzahana/arducam_ros2.git
 else
-    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/arducam_ros2
+    cd ${VINS_WS_SRC}/arducam_ros2
     git pull origin main
 fi
 
 #
-# topic_tools
-#
-print_info "Cloning topic_tools package ... " && sleep 1
-if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/topic_tools" ]; then
-    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src
-    git clone -b humble https://github.com/ros-tooling/topic_tools.git
-fi
-
-
-
-
-#
-# rqt_tf_tree 
-#
-print_info "Cloning rqt_tf_tree package ... " && sleep 1
-if [ ! -d "$HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src/rqt_tf_tree" ]; then
-    cd $HOME/${CONTAINER_NAME}_shared_volume/ros2_ws/src
-    git clone -b humble https://github.com/ros-visualization/rqt_tf_tree.git
-fi
-
-#
-# install d2dtracker.service
-#
-# print_info "Copying d2dtracker.service to /etc/systemd/system/ " && sleep 1
-# sudo cp $ROOT/services/d2dtracker.service /etc/systemd/system/
-# print_info "Copying d2d_service_entrypoint.sh to $HOME/${CONTAINER_NAME}_shared_volume/ " && sleep 1
-# cp $ROOT/services/d2d_service_entrypoint.sh $HOME/${CONTAINER_NAME}_shared_volume/
-# sudo systemctl daemon-reload
-# print_info "Enable d2dtracker.service using: sudo systemctl enable d2dtracker.service"
-# print_info "Start d2dtracker.service using: sudo systemctl start d2dtracker.service" && sleep 1
-####################### Done with copying d2dtracker.service ##############
-
-#
 # Copy rtps_udp_profile.xml
 #
-print_info "Copying $ROOT/docker/middleware_profiles/rtps_udp_profile.xml to $HOME/${CONTAINER_NAME}_shared_volume/ " && sleep 1
-cp $ROOT/docker/middleware_profiles/rtps_udp_profile.xml $HOME/${CONTAINER_NAME}_shared_volume/
+print_info "Copying $ROOT/docker/middleware_profiles/rtps_udp_profile.xml to $HOME" && sleep 1
+cp $ROOT/docker/middleware_profiles/rtps_udp_profile.xml $HOME
 ###########################
 
 #
@@ -173,18 +110,7 @@ else
   echo "Line already exists in config.txt"
 fi
 
-bashrc_file="$HOME/.bashrc"
-line_to_check="alias openvins_container='. $ROOT/scripts/run_openvins.sh'"
+print_info "Building vins_ws ... " && sleep 1
 
-if ! grep -qF "$line_to_check" "$bashrc_file"; then
-    echo "$line_to_check" >> "$bashrc_file"
-    print_info "openvins_container alias added to .bashrc file."
-else
-    print_warning "openvins_container alias already exists in .bashrc file. No changes made."
-fi
-
-echo "You can execute " && print_info "openvins_container " && echo "to start the openvins-container"
-print_warning "If this is the first time you setup openvins-container on Raspberry pi, enter the container and build the ros2_ws wokspace"
-print_warning "You need to reboot your RPi"
-print_info "DONE!"
-cd $HOME
+cd $VINS_WS
+colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"

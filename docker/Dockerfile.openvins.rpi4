@@ -91,6 +91,53 @@ RUN pip3 install future
         && rm -rf /var/lib/apt/lists/* \
         && apt-get clean
 
+#
+# Install libcamera
+#
+# Ref: https://www.raspberrypi.com/documentation/computers/camera_software.html#building-libcamera
+# RUN  apt-get update && apt install -y \
+#      python3-pip \
+#      python3-jinja2 \
+#      libboost-dev \
+#     libgnutls28-dev \
+#     openssl \
+#     libtiff5-dev \
+#     pybind11-dev \
+#     qtbase5-dev \
+#     libqt5core5a \
+#     libqt5gui5 \
+#     libqt5widgets5 \
+#     meson \
+#     cmake \
+#     python3-yaml \
+#     python3-ply \
+#     libglib2.0-dev \
+#     libgstreamer-plugins-base1.0-dev \
+#     libboost-program-options-dev \
+#     libdrm-dev \
+#     libexif-dev \
+#     ninja-build \
+#     python3-prctl \
+#     libatlas-base-dev \
+#     ffmpeg \
+#     && rm -rf /var/lib/apt/lists/* \
+#     && apt-get clean
+# RUN pip3 install --upgrade meson
+
+# RUN cd /  \
+#     && git clone https://github.com/raspberrypi/libcamera.git \
+#     && cd libcamera \
+#     &&  meson setup build --buildtype=release -Dpipelines=rpi/vc4,rpi/pisp -Dipas=rpi/vc4,rpi/pisp -Dv4l2=true -Dgstreamer=enabled -Dtest=false -Dlc-compliance=disabled -Dcam=disabled -Dqcam=disabled -Ddocumentation=disabled -Dpycamera=enabled \
+#     && ninja -C build \
+#     && ninja -C build install
+
+# RUN cd / \
+#     && git clone https://github.com/raspberrypi/rpicam-apps.git \
+#     && cd rpicam-apps \
+#     && meson setup build -Denable_libav=true -Denable_drm=true -Denable_egl=true -Denable_qt=true -Denable_opencv=true -Denable_tflite=false \
+#     && meson compile -C build \
+#     && meson install -C build
+
 # Setup non-root user
 ARG USERNAME=vio
 ARG USER_UID=1000
