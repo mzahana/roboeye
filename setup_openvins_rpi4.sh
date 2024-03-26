@@ -25,7 +25,7 @@ if [ "$BUILD_ROS" = true ]; then
     sudo apt upgrade -y
     sudo rosdep init
     rosdep update
-    rosdep install --from-paths src --ignore-src --rosdistro humble -y --skip-keys "rviz fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool"
+    rosdep install --from-paths src --ignore-src --rosdistro humble -y --skip-keys "fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool"
     colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
 else
     print_warning "Skipping building ROS"
