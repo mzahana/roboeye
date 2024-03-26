@@ -1,13 +1,16 @@
 #!/bin/bash
-ROS_WS=$HOME/ros2_humble
-if [ -f "${ROS_WS}/install/setup.bash" ]; then
-    echo "sourcing ${ROS_WS}/install/setup.bash"
-    source ${ROS_WS}/install/setup.bash
+
+if [ -f "/opt/ros/humble/install/setup.bash" ]; then
+    echo "sourcing /opt/ros/humble/install/setup.bash"
+    source /opt/ros/humble/install/setup.bash
 fi
-VINS_WS=$HOME/vins_ws
-if [ -f "${VINS_WS}/install/setup.bash" ]; then
-    echo "sourcing ${VINS_WS}/install/setup.bash"
-    source ${VINS_WS}/install/setup.bash
+if [ -f "/opt/ros/humble/setup.bash" ]; then
+    echo "sourcing /opt/ros/humble/setup.bash"
+    source /opt/ros/humble/setup.bash
+fi
+if [ -f "$HOME/shared_volume/ros2_ws/install/setup.bash" ]; then
+    echo "sourcing $HOME/ros2_ws/install/setup.bash"
+    source $HOME/shared_volume/ros2_ws/install/setup.bash
 fi
 
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
@@ -35,6 +38,11 @@ export OPENVINS_YAML=''
 #     echo "$line_to_check" >> "$bashrc_file"
 # fi
 
+bashrc_file="$HOME/.bashrc"
+line_to_check="alias rs='ros2 launch realsense2_camera rs.launch.py'"
+if ! grep -qF "$line_to_check" "$bashrc_file"; then
+    echo "$line_to_check" >> "$bashrc_file"
+fi
 
 bashrc_file="$HOME/.bashrc"
 line_to_check="alias vins='ros2 launch ov_msckf subscribe.launch.py config_path:=$OPENVINS_YAML'"
@@ -43,19 +51,19 @@ if ! grep -qF "$line_to_check" "$bashrc_file"; then
 fi
 
 bashrc_file="$HOME/.bashrc"
-line_to_check="alias cb='colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release'"
+line_to_check="alias cb='colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"'"
 if ! grep -qF "$line_to_check" "$bashrc_file"; then
     echo "$line_to_check" >> "$bashrc_file"
 fi
 
 bashrc_file="$HOME/.bashrc"
-line_to_check="alias cbs='colcon  build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select'"
+line_to_check="alias cbs='colcon  build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w" --packages-select'"
 if ! grep -qF "$line_to_check" "$bashrc_file"; then
     echo "$line_to_check" >> "$bashrc_file"
 fi
 
 bashrc_file="$HOME/.bashrc"
-line_to_check="alias cbupto='colcon  build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to'"
+line_to_check="alias cbupto='colcon  build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w" --packages-up-to'"
 if ! grep -qF "$line_to_check" "$bashrc_file"; then
     echo "$line_to_check" >> "$bashrc_file"
 fi
