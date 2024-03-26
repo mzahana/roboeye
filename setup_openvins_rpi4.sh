@@ -23,7 +23,21 @@ rosdep update
 rosdep install --from-paths src --ignore-src --rosdistro humble -y --skip-keys "rviz fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool"
 colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
 
+#
+# OpenVins depndencies
+#
+print_info "Installing openvins dependencies..."
+sudo apt-get update && apt-get install -y \
+    libeigen3-dev \
+    libboost-all-dev \
+    libceres-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+RUN pip3 install future
+
 if [ ! -d "$HOME/vins_ws" ]; then
+    print_info "Creating $HOME/vins_ws/src "
     mkdir -p $HOME/vins_ws/src
 fi
 
