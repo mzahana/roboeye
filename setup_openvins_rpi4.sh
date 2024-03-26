@@ -1,5 +1,9 @@
 #!/bin/bash -e
 
+# You can set these variables before executiong this script
+#BUILD_ROS=false
+#BUILD_OPENVINS=false
+
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $ROOT/utils/print_color.sh
 
@@ -15,14 +19,17 @@ fi
 print_info "Installing some tools... " && sleep 1
 sudo apt install -y git colcon python3-rosdep2 vcstool wget python3-flake8-docstrings python3-pip python3-pytest-cov python3-flake8-blind-except python3-flake8-builtins python3-flake8-class-newline python3-flake8-comprehensions python3-flake8-deprecated python3-flake8-import-order python3-flake8-quotes python3-pytest-repeat python3-pytest-rerunfailures python3-vcstools libx11-dev libxrandr-dev libasio-dev libtinyxml2-dev
 
-cd $HOME/ros2_humble
-vcs import --input https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos src
-sudo apt upgrade -y
-sudo rosdep init
-rosdep update
-rosdep install --from-paths src --ignore-src --rosdistro humble -y --skip-keys "rviz fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool"
-colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
-
+if [ "$BUILD_ROS" = true ]; then
+    cd $HOME/ros2_humble
+    vcs import --input https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos src
+    sudo apt upgrade -y
+    sudo rosdep init
+    rosdep update
+    rosdep install --from-paths src --ignore-src --rosdistro humble -y --skip-keys "rviz fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool"
+    colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+else
+    print_warning "Skipping building ROS"
+fi
 #
 # OpenVins depndencies
 #
@@ -34,7 +41,7 @@ sudo apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-RUN pip3 install future
+pip3 install future
 
 if [ ! -d "$HOME/vins_ws" ]; then
     print_info "Creating $HOME/vins_ws/src "
@@ -43,6 +50,7 @@ fi
 
 VINS_WS=$HOME/vins_ws
 VINS_WS_SRC=$HOME/vins_ws/src
+
 #
 # Cloning open_vins
 #
@@ -124,7 +132,11 @@ else
   echo "Line already exists in config.txt"
 fi
 
-print_info "Building vins_ws ... " && sleep 1
+if [ "$BUILD_OPENVINS" = true ]; then
+    print_info "Building vins_ws ... " && sleep 1
 
-cd $VINS_WS
-colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+    cd $VINS_WS
+    colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+else
+    print_warning "SKipping building vins_ws"
+fi
