@@ -9,6 +9,7 @@ source $ROOT/utils/print_color.sh
 
 ROS_WS=$HOME/ros2_humble
 ROS2_INSTALL=$HOME/ros2_humble/install
+ROS_DISTRO=humble
 
 print_info "Setting up ROS 2 humble on Raspberry Pi 4."
 print_warning "This may take a few hours on Raspberry Pi with limited memory ..."
@@ -44,16 +45,19 @@ sudo apt update && sudo apt install -y \
                         libx11-dev \
                         libxrandr-dev \
                         libasio-dev \
-                        libtinyxml2-dev
+                        libtinyxml2-dev \
+                        python3-rosinstall-generator
 
 if [ "$BUILD_ROS" = true ]; then
+    print_info "Building ROS2 $ROS_DISTRO" && sleep 1
     cd $HOME/ros2_humble
-    vcs import --input https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos src
+    cp $ROOT/ros2.humble.rosinstall $HOME/ros2_humble/
+    vcs import --input $HOME/ros2_humble/ros2.humble.rosinstall src
     sudo apt upgrade -y
     sudo rosdep init
     rosdep update
     rosdep install --from-paths src --ignore-src --rosdistro humble -y --skip-keys "rviz fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool"
-    colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"  --packages-ignore-regex .*rviz.* --packages-ignore fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool
+    colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w" --packages-skip-build-finished --packages-ignore-regex .*rviz.* --packages-ignore fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool
 else
     print_warning "Skipping building ROS"
 fi
