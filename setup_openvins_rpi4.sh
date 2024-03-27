@@ -8,7 +8,7 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $ROOT/utils/print_color.sh
 
 print_info "Setting up ROS 2 humble on Raspberry Pi 4."
-print_warning "This may take up to 2.5 hours on Raspberry Pi 4 with 4GB RAM"
+print_warning "This may take a few hours on Raspberry Pi with limited memory ..."
 sleep 2
 
 if [ ! -d "$HOME/ros2_humble" ]; then
