@@ -123,7 +123,7 @@ if [ "$BUILD_OPENVINS" = true ]; then
         source ${ROS2_INSTALL}/setup.bash
         print_info "Building $VINS_WS ... " && sleep 1
         cd $VINS_WS
-        MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+        MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --packages-skip-build-finished --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
     else
         print_error "Could not find ${ROS2_INSTALL}/setup.bash"
         print_error "Not building $VINS_WS"
