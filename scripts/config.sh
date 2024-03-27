@@ -14,6 +14,12 @@ fi
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 # export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export ROS_DOMAIN_ID=10
+if [ -f "$HOME/rtps_udp_profile.xml" ]; then
+    export FASTRTPS_DEFAULT_PROFILES_FILE=$HOME/rtps_udp_profile.xml
+    print_info "FASTRTPS_DEFAULT_PROFILES_FILE=$HOME/rtps_udp_profile.xml"
+else
+    print_warning " Could not find $HOME/rtps_udp_profile.xml"
+fi
 
 #
 # Modules

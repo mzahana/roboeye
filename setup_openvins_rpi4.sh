@@ -3,6 +3,7 @@
 # You can set these variables before executiong this script
 #BUILD_ROS=false
 #BUILD_OPENVINS=false
+#INSTALL_ARDUCAM=false
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $ROOT/utils/print_color.sh
@@ -10,10 +11,8 @@ source $ROOT/utils/print_color.sh
 ROS_WS=$HOME/ros2_humble
 ROS2_INSTALL=$HOME/ros2_humble/install
 ROS_DISTRO=humble
-
-print_info "Setting up ROS 2 humble on Raspberry Pi 4."
-print_warning "This may take a few hours on Raspberry Pi with limited memory ..."
-sleep 2
+VINS_WS=$HOME/vins_ws
+VINS_WS_SRC=$HOME/vins_ws/src
 
 if [ ! -d "$HOME/ros2_humble" ]; then
     print_info "Creating $HOME/ros2_humble workspace"
@@ -49,7 +48,8 @@ sudo apt update && sudo apt install -y \
                         python3-rosinstall-generator
 
 if [ "$BUILD_ROS" = true ]; then
-    print_info "Building ROS2 $ROS_DISTRO" && sleep 1
+    print_info "Building ROS2 $ROS_DISTRO"
+    print_warning "This may take a few hours on Raspberry Pi with limited memory ..." && sleep 1
     cd $HOME/ros2_humble
     cp $ROOT/ros2.humble.rosinstall $HOME/ros2_humble/
     vcs import --input $HOME/ros2_humble/ros2.humble.rosinstall src
@@ -78,9 +78,6 @@ if [ ! -d "$HOME/vins_ws" ]; then
     print_info "Creating $HOME/vins_ws/src "
     mkdir -p $HOME/vins_ws/src
 fi
-
-VINS_WS=$HOME/vins_ws
-VINS_WS_SRC=$HOME/vins_ws/src
 
 #
 # Cloning open_vins
@@ -120,12 +117,21 @@ else
     git pull origin main
 fi
 
-#
-# Copy rtps_udp_profile.xml
-#
-print_info "Copying $ROOT/docker/middleware_profiles/rtps_udp_profile.xml to $HOME" && sleep 1
-cp $ROOT/docker/middleware_profiles/rtps_udp_profile.xml $HOME
-###########################
+if [ "$BUILD_OPENVINS" = true ]; then
+    if [ -f "${ROS2_INSTALL}/setup.bash" ]; then
+        echo "sourcing ${ROS2_INSTALL}/setup.bash"
+        source ${ROS2_INSTALL}/setup.bash
+        print_info "Building $VINS_WS ... " && sleep 1
+        cd $VINS_WS
+        MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+    else
+        print_error "Could not find ${ROS2_INSTALL}/setup.bash"
+        print_error "Not building $VINS_WS"
+    fi
+else
+    print_warning "SKipping building $VINS_WS"
+fi
+
 
 #
 # Arducam drivers
@@ -167,19 +173,11 @@ else
     print_warning "Skippig installation of Arducam drivers"
 fi
 
-if [ "$BUILD_OPENVINS" = true ]; then
-    if [ -f "${ROS2_INSTALL}/setup.bash" ]; then
-        echo "sourcing ${ROS2_INSTALL}/setup.bash"
-        source ${ROS2_INSTALL}/setup.bash
-        print_info "Building vins_ws ... " && sleep 1
-        cd $VINS_WS
-        MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
-    else
-        print_error "Could not find ${ROS2_INSTALL}/setup.bash"
-        print_error "Not building $VINS_WS"
-    fi
-else
-    print_warning "SKipping building $VINS_WS"
-fi
+#
+# Copy rtps_udp_profile.xml
+#
+print_info "Copying $ROOT/docker/middleware_profiles/rtps_udp_profile.xml to $HOME" && sleep 1
+cp $ROOT/docker/middleware_profiles/rtps_udp_profile.xml $HOME
+###########################
 
 cd $ROOT
