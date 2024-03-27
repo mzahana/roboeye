@@ -103,33 +103,37 @@ cp $ROOT/docker/middleware_profiles/rtps_udp_profile.xml $HOME
 #   https://www.uctronics.com/arducam-1mp-4-quadrascopic-camera-bundle-kit-for-raspberry-pi-nvidia-jetson-nano-xavier-nx.html
 # Ref: https://docs.arducam.com/Raspberry-Pi-Camera/Multi-Camera-CamArray/quick-start/
 #
-print_info "Installing Arducam drivers..." && sleep 1
+if [ "$INSTALL_ARDUCAM" = true ]; then
+    print_info "Installing Arducam drivers..." && sleep 1
 
-cd ${HOME}
-wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
-chmod +x install_pivariety_pkgs.sh
-./install_pivariety_pkgs.sh -p libcamera_dev
-./install_pivariety_pkgs.sh -p libcamera_apps
+    cd ${HOME}
+    wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
+    chmod +x install_pivariety_pkgs.sh
+    ./install_pivariety_pkgs.sh -p libcamera_dev
+    ./install_pivariety_pkgs.sh -p libcamera_apps
 
-# Path to the config.txt file
-CONFIG_FILE="/boot/firmware/config.txt"
+    # Path to the config.txt file
+    CONFIG_FILE="/boot/firmware/config.txt"
 
-# The line you want to add
-LINE_TO_ADD="dtoverlay=arducam-pivariety"
+    # The line you want to add
+    LINE_TO_ADD="dtoverlay=arducam-pivariety"
 
-# Check if the line already exists in the file
-if ! sudo grep -q "$LINE_TO_ADD" "$CONFIG_FILE"; then
-  # If the line does not exist, append it after [all]
-  if sudo grep -q "\[all\]" "$CONFIG_FILE"; then
-    # Using sudo with sed to append after [all]. A temporary file is used for sed's in-place editing to ensure sudo permissions are respected
-    sudo sed -i "/\[all\]/a $LINE_TO_ADD" "$CONFIG_FILE"
-  else
-    # Using echo with sudo to append at the end of the file
-    echo "$LINE_TO_ADD" | sudo tee -a "$CONFIG_FILE" > /dev/null
-  fi
-  echo "Line added to config.txt"
+    # Check if the line already exists in the file
+    if ! sudo grep -q "$LINE_TO_ADD" "$CONFIG_FILE"; then
+    # If the line does not exist, append it after [all]
+    if sudo grep -q "\[all\]" "$CONFIG_FILE"; then
+        # Using sudo with sed to append after [all]. A temporary file is used for sed's in-place editing to ensure sudo permissions are respected
+        sudo sed -i "/\[all\]/a $LINE_TO_ADD" "$CONFIG_FILE"
+    else
+        # Using echo with sudo to append at the end of the file
+        echo "$LINE_TO_ADD" | sudo tee -a "$CONFIG_FILE" > /dev/null
+    fi
+    echo "Line added to config.txt"
+    else
+    echo "Line already exists in config.txt"
+    fi
 else
-  echo "Line already exists in config.txt"
+    print_warning "Skippig installation of Arducam drivers"
 fi
 
 if [ "$BUILD_OPENVINS" = true ]; then
