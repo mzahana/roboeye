@@ -136,7 +136,9 @@ if [ "$BUILD_OPENVINS" = true ]; then
     print_info "Building vins_ws ... " && sleep 1
 
     cd $VINS_WS
-    colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+    MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
 else
     print_warning "SKipping building vins_ws"
 fi
+
+cd $ROOT
