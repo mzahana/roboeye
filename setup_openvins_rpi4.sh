@@ -34,12 +34,12 @@ fi
 # OpenVins depndencies
 #
 print_info "Installing openvins dependencies..."
-sudo apt-get update && apt-get install -y \
+sudo apt-get update && sudo apt-get install -y \
     libeigen3-dev \
     libboost-all-dev \
     libceres-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && sudo rm -rf /var/lib/apt/lists/* \
+    && sudo apt-get clean
 
 pip3 install future
 
