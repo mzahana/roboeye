@@ -1,8 +1,9 @@
 #!/bin/bash
 ROS_WS=$HOME/ros2_humble
-if [ -f "${ROS_WS}/install/setup.bash" ]; then
-    echo "sourcing ${ROS_WS}/install/setup.bash"
-    source ${ROS_WS}/install/setup.bash
+ROS2_INSTALL=$HOME/ros2_humble/install
+if [ -f "${ROS2_INSTALL}/setup.bash" ]; then
+    echo "sourcing ${ROS2_INSTALL}/setup.bash"
+    source ${ROS2_INSTALL}/setup.bash
 fi
 VINS_WS=$HOME/vins_ws
 if [ -f "${VINS_WS}/install/setup.bash" ]; then

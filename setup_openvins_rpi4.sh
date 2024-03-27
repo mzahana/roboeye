@@ -7,6 +7,9 @@
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $ROOT/utils/print_color.sh
 
+ROS_WS=$HOME/ros2_humble
+ROS2_INSTALL=$HOME/ros2_humble/install
+
 print_info "Setting up ROS 2 humble on Raspberry Pi 4."
 print_warning "This may take a few hours on Raspberry Pi with limited memory ..."
 sleep 2
@@ -137,12 +140,18 @@ else
 fi
 
 if [ "$BUILD_OPENVINS" = true ]; then
-    print_info "Building vins_ws ... " && sleep 1
-
-    cd $VINS_WS
-    MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+    if [ -f "${ROS2_INSTALL}/setup.bash" ]; then
+        echo "sourcing ${ROS2_INSTALL}/setup.bash"
+        source ${ROS2_INSTALL}/setup.bash
+        print_info "Building vins_ws ... " && sleep 1
+        cd $VINS_WS
+        MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+    else
+        print_error "Could not find ${ROS2_INSTALL}/setup.bash"
+        print_error "Not building $VINS_WS"
+    fi
 else
-    print_warning "SKipping building vins_ws"
+    print_warning "SKipping building $VINS_WS"
 fi
 
 cd $ROOT
