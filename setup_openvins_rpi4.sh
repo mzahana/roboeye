@@ -20,7 +20,31 @@ if [ ! -d "$HOME/ros2_humble" ]; then
 fi
 
 print_info "Installing some tools... " && sleep 1
-sudo apt install -y git colcon python3-rosdep2 vcstool wget python3-flake8-docstrings python3-pip python3-pytest-cov python3-flake8-blind-except python3-flake8-builtins python3-flake8-class-newline python3-flake8-comprehensions python3-flake8-deprecated python3-flake8-import-order python3-flake8-quotes python3-pytest-repeat python3-pytest-rerunfailures python3-vcstools libx11-dev libxrandr-dev libasio-dev libtinyxml2-dev
+sudo apt update && sudo apt install -y \
+                        i2c-tools \
+                        libi2c-dev \
+                        git \
+                        colcon \
+                        python3-rosdep2 \
+                        vcstool \
+                        wget \
+                        python3-flake8-docstrings \
+                        python3-pip \
+                        python3-pytest-cov \
+                        python3-flake8-blind-except \
+                        python3-flake8-builtins \
+                        python3-flake8-class-newline \
+                        python3-flake8-comprehensions \
+                        python3-flake8-deprecated \
+                        python3-flake8-import-order \
+                        python3-flake8-quotes \
+                        python3-pytest-repeat \
+                        python3-pytest-rerunfailures \
+                        python3-vcstools \
+                        libx11-dev \
+                        libxrandr-dev \
+                        libasio-dev \
+                        libtinyxml2-dev
 
 if [ "$BUILD_ROS" = true ]; then
     cd $HOME/ros2_humble
