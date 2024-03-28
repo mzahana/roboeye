@@ -94,15 +94,28 @@ print_info "patching ROS2Visualizer.h ..." && sleep 1
 cp $ROOT/docker/patches/ROS2Visualizer.h ${VINS_WS_SRC}/open_vins/ov_msckf/src/ros/
 
 #
-# ros2_mpu6050_driver
+# ros2_mpu6050_driver (Does not work  propely. Use the one below)
 #
-print_info "Cloning ros2_mpu6050_driver ..." && sleep 1
-if [ ! -d "${VINS_WS_SRC}/ros2_mpu6050_driver" ];then
+# print_info "Cloning ros2_mpu6050_driver ..." && sleep 1
+# if [ ! -d "${VINS_WS_SRC}/ros2_mpu6050_driver" ];then
+#     cd ${VINS_WS_SRC}
+#     git clone https://github.com/mzahana/ros2_mpu6050_driver.git
+# else
+#     cd ${VINS_WS_SRC}/ros2_mpu6050_driver
+#     git pull origin main
+# fi
+
+#
+# mpu6050_driver
+#
+print_info "Cloning mpu6050_driver ..." && sleep 1
+if [ ! -d "${VINS_WS_SRC}/mpu6050_driver" ];then
     cd ${VINS_WS_SRC}
-    git clone https://github.com/mzahana/ros2_mpu6050_driver.git
+    git clone https://github.com/mzahana/mpu6050_driver.git
+    cd ${VINS_WS_SRC}/mpu6050_driver && git checkout ros2_humble
 else
-    cd ${VINS_WS_SRC}/ros2_mpu6050_driver
-    git pull origin main
+    cd ${VINS_WS_SRC}/mpu6050_driver
+    git pull origin ros2_humble
 fi
 
 #
