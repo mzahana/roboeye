@@ -119,30 +119,27 @@ else
 fi
 
 #
-# arducam_ros2
+# arducam_ros2 (This does not work on RPi; use camera_ros; see below)
 #
-print_info "Cloning arducam_ros2 ..." && sleep 1
-if [ ! -d "${VINS_WS_SRC}/arducam_ros2" ];then
-    cd ${VINS_WS_SRC}
-    git clone https://github.com/mzahana/arducam_ros2.git
-else
-    cd ${VINS_WS_SRC}/arducam_ros2
-    git pull origin main
-fi
+# print_info "Cloning arducam_ros2 ..." && sleep 1
+# if [ ! -d "${VINS_WS_SRC}/arducam_ros2" ];then
+#     cd ${VINS_WS_SRC}
+#     git clone https://github.com/mzahana/arducam_ros2.git
+# else
+#     cd ${VINS_WS_SRC}/arducam_ros2
+#     git pull origin main
+# fi
 
-if [ "$BUILD_OPENVINS" = true ]; then
-    if [ -f "${ROS2_INSTALL}/setup.bash" ]; then
-        echo "sourcing ${ROS2_INSTALL}/setup.bash"
-        source ${ROS2_INSTALL}/setup.bash
-        print_info "Building $VINS_WS ... " && sleep 1
-        cd $VINS_WS
-        MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --packages-skip-build-finished --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
-    else
-        print_error "Could not find ${ROS2_INSTALL}/setup.bash"
-        print_error "Not building $VINS_WS"
-    fi
+#
+# camera_ros (for RPi and Arducam cameras)
+#
+print_info "Cloning camera_ros ..." && sleep 1
+if [ ! -d "${VINS_WS_SRC}/camera_ros" ];then
+    cd ${VINS_WS_SRC}
+    git clone https://github.com/christianrauch/camera_ros.git
 else
-    print_warning "SKipping building $VINS_WS"
+    cd ${VINS_WS_SRC}/camera_ros
+    git pull origin main
 fi
 
 
@@ -184,6 +181,21 @@ if [ "$INSTALL_ARDUCAM" = true ]; then
     fi
 else
     print_warning "Skippig installation of Arducam drivers"
+fi
+
+if [ "$BUILD_OPENVINS" = true ]; then
+    if [ -f "${ROS2_INSTALL}/setup.bash" ]; then
+        echo "sourcing ${ROS2_INSTALL}/setup.bash"
+        source ${ROS2_INSTALL}/setup.bash
+        print_info "Building $VINS_WS ... " && sleep 1
+        cd $VINS_WS
+        MAKEFLAGS="-j1 -l1" colcon build --executor sequential  --packages-skip-build-finished --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w"
+    else
+        print_error "Could not find ${ROS2_INSTALL}/setup.bash"
+        print_error "Not building $VINS_WS"
+    fi
+else
+    print_warning "SKipping building $VINS_WS"
 fi
 
 #
