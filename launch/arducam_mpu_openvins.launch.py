@@ -19,6 +19,9 @@ def generate_launch_description():
             'pixelformat', default_value='XBGR8888',
             description='Pixel format e.g. XBGR8888, YUVU'),
         DeclareLaunchArgument(
+            'contrast', default_value='',
+            description='Image contrast'),
+        DeclareLaunchArgument(
             'ov_config', default_value='',
             description='Path to openvins config file'),
         # Add more arguments as needed
@@ -33,7 +36,8 @@ def generate_launch_description():
     camera_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([image_splitter_ros_path, '/launch/stereo_image_split.launch.py']),
         launch_arguments={'width': LaunchConfiguration('width'),
-                          'height': LaunchConfiguration('height')}.items(),
+                          'height': LaunchConfiguration('height'),
+                          'contrast': LaunchConfiguration('contrast')}.items(),
     )
 
     # Include launch file from package_b and pass arguments to it
