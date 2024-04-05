@@ -93,6 +93,12 @@ fi
 print_info "patching ROS2Visualizer.h ..." && sleep 1
 cp $ROOT/docker/patches/ROS2Visualizer.h ${VINS_WS_SRC}/open_vins/ov_msckf/src/ros/
 
+print_info "Copying arducam stereo config files to ${VINS_WS_SRC}/open_vins/config/rpi_vi_kit"
+if [ ! -d "${VINS_WS_SRC}/open_vins/config/rpi_vi_kit" ]; then
+    mkdir -p ${VINS_WS_SRC}/open_vins/config/rpi_vi_kit
+fi
+cp ${ROOT}/config/openvins/* ${VINS_WS_SRC}/open_vins/config/rpi_vi_kit/
+
 #
 # ros2_mpu6050_driver (Does not work  propely. Use the one below)
 #
