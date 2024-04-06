@@ -134,8 +134,8 @@ def main():
     kalibr_data = read_kalibr_yaml(args.camera_yaml)
     imu_data = read_kalibr_yaml(args.imu_yaml)
 
-    generate_camera_yaml(kalibr_data.get('cam0', {}), 'first_camera.yaml')
-    generate_camera_yaml(kalibr_data.get('cam1', {}), 'second_camera.yaml')
+    generate_camera_yaml(kalibr_data.get('cam0', {}), 'cam0.yaml')
+    generate_camera_yaml(kalibr_data.get('cam1', {}), 'cam1.yaml')
     generate_vins_config_yaml(kalibr_data, imu_data, 'vins_config.yaml')
 
 if __name__ == "__main__":
