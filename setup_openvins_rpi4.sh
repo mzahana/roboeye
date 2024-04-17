@@ -45,7 +45,8 @@ sudo apt update && sudo apt install -y \
                         libxrandr-dev \
                         libasio-dev \
                         libtinyxml2-dev \
-                        python3-rosinstall-generator
+                        python3-rosinstall-generator \
+                        cmake
 
 if [ "$BUILD_ROS" = true ]; then
     print_info "Building ROS2 $ROS_DISTRO"
@@ -57,7 +58,7 @@ if [ "$BUILD_ROS" = true ]; then
     sudo rosdep init
     rosdep update
     rosdep install --from-paths src --ignore-src --rosdistro humble -y --skip-keys "rviz fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool"
-    colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w" --packages-skip-build-finished --packages-ignore-regex .*rviz.* --packages-ignore fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-vcstool
+    colcon build --symlink-install  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-w" --packages-skip-build-finished --packages-ignore-regex .*rviz.* --packages-ignore kdl_parser robot_state_publisher rti-connext-dds-6.0.1 python3-vcstool
 else
     print_warning "Skipping building ROS"
 fi
@@ -85,7 +86,7 @@ fi
 print_info "Cloning open_vins ..." && sleep 1
 if [ ! -d "${VINS_WS_SRC}/open_vins" ];then
     cd ${VINS_WS_SRC}
-    git clone https://github.com/rpng/open_vins/
+    git clone https://github.com/rpng/open_vins.git
 else
     cd ${VINS_WS_SRC}/open_vins
     git pull origin master
