@@ -10,3 +10,5 @@ all: openvins-rpi4
 
 openvins-rpi4:
 	docker build --build-arg USER_GID=$(U_GID) --build-arg USER_UID=$(U_UID) --build-arg USERNAME=$(UNAME) --build-arg BASE_IMAGE="ros:humble-perception" -t mzahana/openvins_rpi:rpi4 . -f Dockerfile.openvins.rpi4
+ros.noetic.openvins.rpi4:
+	docker build --build-arg USER_GID=$(U_GID) --build-arg USER_UID=$(U_UID) --build-arg USERNAME=$(UNAME) --build-arg BASE_IMAGE="ros:noetic-perception" -t mzahana/openvins_rpi:noetic . -f Dockerfile.ros.noetic

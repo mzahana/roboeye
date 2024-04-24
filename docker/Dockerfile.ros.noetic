@@ -1,0 +1,59 @@
+# Dockerfile for setting up openvins dependecies
+
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+
+
+# # Fundamentals
+RUN apt-get update && apt-get install -y \
+    bash-completion \
+    nano \
+    build-essential \
+    curl \
+    git \
+    iputils-ping \
+    lsb-release \
+    sudo \
+    tar \
+    unzip \
+    vim \
+    wget \
+    libgoogle-glog-dev \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+
+
+#
+# OpenVins depndencies
+#
+RUN apt-get update && apt-get install -y \
+    libeigen3-dev \
+    libboost-all-dev \
+    libceres-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+
+
+# Setup non-root user
+ARG USERNAME=vio
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+
+# Create the  user if not already exists
+RUN if [ ! $(getent passwd ${USERNAME}) ]; then \
+        groupadd --gid ${USER_GID} ${USERNAME} ; \
+        useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} ; \
+    fi
+
+# Update 'vio' user
+RUN echo ${USERNAME} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${USERNAME} \
+    && adduser ${USERNAME} video && adduser ${USERNAME} plugdev && adduser ${USERNAME} sudo
+
+
+CMD ["/bin/bash"]
