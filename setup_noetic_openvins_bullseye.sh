@@ -198,6 +198,12 @@ else
 fi
 
 #
+# Copy launch file
+#
+print_info "Copying $ROOT/launch/arducam_mpu_openvins.launch to $HOME/" && sleep 1
+cp $ROOT/launch/arducam_mpu_openvins.launch $HOME/
+
+#
 # DONE!
 #
 cd $ROOT
