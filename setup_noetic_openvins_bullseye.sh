@@ -202,6 +202,8 @@ fi
 #
 print_info "Copying $ROOT/launch/arducam_mpu_openvins.launch to $HOME/" && sleep 1
 cp $ROOT/launch/arducam_mpu_openvins.launch $HOME/
+print_info "Copying $ROOT/launch/arducam_mpu.launch to $HOME/" && sleep 1
+cp $ROOT/launch/arducam_mpu.launch $HOME/
 
 #
 # DONE!
