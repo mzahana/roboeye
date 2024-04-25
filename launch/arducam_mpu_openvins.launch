@@ -1,0 +1,17 @@
+<launch>
+    <!-- Include basic.launch from libcamera_ros package -->
+    <include file="$(find libcamera_ros)/launch/basic.launch" />
+
+    <!-- Include mpu6050_driver.launch from mpu6050_driver package -->
+    <include file="$(find mpu6050_driver)/launch/mpu6050_driver.launch" />
+
+    <!-- Include stereo_image_split.launch from image_splitter_ros package -->
+    <include file="$(find image_splitter_ros)/launch/stereo_image_split.launch" />
+
+    <!-- Include subscribe.launch from ov_msckf with parameters -->
+    <include file="$(find ov_msckf)/launch/subscribe.launch">
+        <arg name="config_path" value="/home/vio/rosbags/openvins_config/estimator_config.yaml" />
+        <arg name="max_cameras" value="1" />
+        <arg name="verbosity" value="SILENT" />
+    </include>
+</launch>
