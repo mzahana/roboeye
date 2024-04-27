@@ -1,0 +1,16 @@
+<launch>
+    <arg name="config_path" default="" />
+    <!-- Include basic.launch from libcamera_ros package -->
+    <include file="$(find libcamera_ros)/launch/basic.launch" />
+
+    <!-- Include mpu6050_driver.launch from mpu6050_driver package -->
+    <include file="$(find mpu6050_driver)/launch/mpu6050_driver.launch" />
+
+    <!-- Include stereo_image_split.launch from image_splitter_ros package -->
+    <include file="$(find image_splitter_ros)/launch/stereo_image_split.launch" />
+
+    <!-- MASTER NODE -->
+    <node name="mins_subscribe" pkg="mins" type="subscribe" output="screen" clear_params="true" required="true">
+        <param name="config_path"       type="str"  value="$(arg config_path)" />
+    </node>
+</launch>
