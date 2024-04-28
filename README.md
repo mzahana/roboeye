@@ -42,3 +42,12 @@ The setup amy take long time!
 * Transfer the calibration data from Kalibr output to a yaml files that openvins can read. See the examples in [config/openvins](config/openvins)
 * You can use [arducam_mpu_openvins.launch](launch/arducam_mpu_openvins.launch) to run the entire system.
 * Run Rviz on your PC to visualize the odomery (make sure to set `ROS_MASTER_URI` and `ROS_HOSTNAME` properly).
+
+# System Service
+The camera, imu, and openvins can be run upon system startup using the the system service [arducam_stereo_mpu_openvins.service](services/arducam_stereo_mpu_openvins.service) which runs the [arducam_openvins.sh](services/arducam_openvins.sh) script that runs the required nodes. The service assumes that this shell script is located in the `$HOME` directory of the user `vio`. 
+* To install the service, copy it to `/etc/systemd/system/`
+* Reload `sudo systemctl daemon-reload`
+* Enable the service `sudo systemctl enable arducam_stereo_mpu_openvins.service`
+* Start the service `sudo systemctl start arducam_stereo_mpu_openvins.service`
+* To stop the service `sudo systemctl stop arducam_stereo_mpu_openvins.service`
+* To disable the service `sudo systemctl disable arducam_stereo_mpu_openvins.service`
