@@ -1,6 +1,6 @@
 [Unit]
 Description=Arducam Stereo MPU OpenVINS Service
-After=network-online.target network.target multi-user.target
+After=multi-user.target
 Wants=network-online.target
 
 [Service]

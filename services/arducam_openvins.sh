@@ -19,9 +19,11 @@ set_ros_ip() {
     fi
 }
 
+# This is not needed if you are running the system completely locally
+# and transferring data, e.g., serially.
 set_ros_ip
 
 # Start the ROS nodes
-roslaunch /home/vio/arducam_mpu_openvins.launch &
+roslaunch /home/vio/arducam_mpu_openvins.launch
 
-wait
+#wait
