@@ -102,6 +102,33 @@ if [ ! -d "${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit" ]; then
 fi
 cp ${ROOT}/config/openvins/* ${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit/
 
+#
+# Cloning rovio
+#
+sudo apt-get update && sudo apt-get install -y freeglut3-dev libglew-dev
+print_info "Cloning ROVIO ..." && sleep 1
+if [ ! -d "${CATKIN_WS_SRC}/rovio" ];then
+    cd ${CATKIN_WS_SRC}
+    git clone -b ros_noetic https://github.com/mzahana/rovio.git
+    cd ${CATKIN_WS_SRC}/rovio
+    git submodule update --init --recursive
+else
+    cd ${CATKIN_WS_SRC}/rovio
+    git pull origin ros_noetic
+fi
+
+
+#
+# Cloning kindr: required by rovio
+#
+print_info "Cloning kindr ..." && sleep 1
+if [ ! -d "${CATKIN_WS_SRC}/kindr" ];then
+    cd ${CATKIN_WS_SRC}
+    git clone https://github.com/ethz-asl/kindr.git
+else
+    cd ${CATKIN_WS_SRC}/kindr
+    git pull origin master
+fi
 
 #
 # i2c_device_ros: Required by mpu6050_driver
@@ -188,13 +215,29 @@ if [ "$BUILD_OPENVINS" = true ]; then
         source ${ROS_WS}/install_isolated/setup.bash
         print_info "Building $CATKIN_WS ... " && sleep 1
         cd $CATKIN_WS
-        catkin build -j1
+        catkin build ov_msckf image_splitter_ros mpu6050_driver libcamera_ros
     else
         print_error "Could not find ${ROS_WS}/install_isolated/setup.bash"
         print_error "Not building $CATKIN_WS"
     fi
 else
-    print_warning "SKipping building $CATKIN_WS"
+    print_warning "SKipping building open_vins"
+fi
+
+if [ "$BUILD_ROVIO" = true ]; then
+    
+    if [ -f "${ROS_WS}/install_isolated/setup.bash" ]; then
+        echo "sourcing ${ROS_WS}/install_isolated/setup.bash"
+        source ${ROS_WS}/install_isolated/setup.bash
+        print_info "Building $CATKIN_WS ... " && sleep 1
+        cd $CATKIN_WS
+        catkin build rovio mpu6050_driver libcamera_ros -j 1 --mem-limit 50% --cmake-args -DCMAKE_BUILD_TYPE=Release -DMAKE_SCENE=OFF -DROVIO_NCAM=1 -DROVIO_PATCHSIZE=4 -DROVIO_NMAXFEATURE=15
+    else
+        print_error "Could not find ${ROS_WS}/install_isolated/setup.bash"
+        print_error "Not building $CATKIN_WS"
+    fi
+else
+    print_warning "SKipping building ROVIO"
 fi
 
 #
