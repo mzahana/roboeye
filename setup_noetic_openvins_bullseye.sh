@@ -71,65 +71,6 @@ else
     print_warning "Skipping building ROS"
 fi
 
-source $ROS_WS/install_isolated/setup.bash
-
-#
-# OpenVins depndencies
-#
-print_info "Installing openvins dependencies..."
-sudo apt-get update && sudo apt-get install -y \
-    libeigen3-dev \
-    libboost-all-dev \
-    libceres-dev \
-    && sudo rm -rf /var/lib/apt/lists/* \
-    && sudo apt-get clean
-
-#
-# Cloning open_vins
-#
-print_info "Cloning open_vins ..." && sleep 1
-if [ ! -d "${CATKIN_WS_SRC}/open_vins" ];then
-    cd ${CATKIN_WS_SRC}
-    git clone https://github.com/rpng/open_vins.git
-else
-    cd ${CATKIN_WS_SRC}/open_vins
-    git pull origin master
-fi
-
-print_info "Copying arducam stereo config files to ${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit"
-if [ ! -d "${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit" ]; then
-    mkdir -p ${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit
-fi
-cp ${ROOT}/config/openvins/* ${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit/
-
-#
-# Cloning rovio
-#
-sudo apt-get update && sudo apt-get install -y freeglut3-dev libglew-dev
-print_info "Cloning ROVIO ..." && sleep 1
-if [ ! -d "${CATKIN_WS_SRC}/rovio" ];then
-    cd ${CATKIN_WS_SRC}
-    git clone -b ros_noetic https://github.com/mzahana/rovio.git
-    cd ${CATKIN_WS_SRC}/rovio
-    git submodule update --init --recursive
-else
-    cd ${CATKIN_WS_SRC}/rovio
-    git pull origin ros_noetic
-fi
-
-
-#
-# Cloning kindr: required by rovio
-#
-print_info "Cloning kindr ..." && sleep 1
-if [ ! -d "${CATKIN_WS_SRC}/kindr" ];then
-    cd ${CATKIN_WS_SRC}
-    git clone https://github.com/ethz-asl/kindr.git
-else
-    cd ${CATKIN_WS_SRC}/kindr
-    git pull origin master
-fi
-
 #
 # i2c_device_ros: Required by mpu6050_driver
 #
@@ -209,7 +150,36 @@ else
 fi
 
 if [ "$BUILD_OPENVINS" = true ]; then
-    
+    #
+    # OpenVins depndencies
+    #
+    print_info "Installing openvins dependencies..."
+    sudo apt-get update && sudo apt-get install -y \
+        libeigen3-dev \
+        libboost-all-dev \
+        libceres-dev \
+        && sudo rm -rf /var/lib/apt/lists/* \
+        && sudo apt-get clean
+
+    #
+    # Cloning open_vins
+    #
+    print_info "Cloning open_vins ..." && sleep 1
+    if [ ! -d "${CATKIN_WS_SRC}/open_vins" ];then
+        cd ${CATKIN_WS_SRC}
+        git clone https://github.com/rpng/open_vins.git
+    else
+        cd ${CATKIN_WS_SRC}/open_vins
+        git pull origin master
+    fi
+
+    print_info "Copying arducam stereo config files to ${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit"
+    if [ ! -d "${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit" ]; then
+        mkdir -p ${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit
+    fi
+    cp ${ROOT}/config/openvins/* ${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit/
+
+    # Building openvins
     if [ -f "${ROS_WS}/install_isolated/setup.bash" ]; then
         echo "sourcing ${ROS_WS}/install_isolated/setup.bash"
         source ${ROS_WS}/install_isolated/setup.bash
@@ -225,7 +195,42 @@ else
 fi
 
 if [ "$BUILD_ROVIO" = true ]; then
-    
+    #
+    # Cloning rovio
+    #
+    sudo apt-get update && sudo apt-get install -y freeglut3-dev libglew-dev
+    print_info "Cloning ROVIO ..." && sleep 1
+    if [ ! -d "${CATKIN_WS_SRC}/rovio" ];then
+        cd ${CATKIN_WS_SRC}
+        git clone -b ros_noetic https://github.com/mzahana/rovio.git
+        cd ${CATKIN_WS_SRC}/rovio
+        git submodule update --init --recursive
+    else
+        cd ${CATKIN_WS_SRC}/rovio
+        git pull origin ros_noetic
+    fi
+
+
+    #
+    # Cloning kindr: required by rovio
+    #
+    print_info "Cloning kindr ..." && sleep 1
+    if [ ! -d "${CATKIN_WS_SRC}/kindr" ];then
+        cd ${CATKIN_WS_SRC}
+        git clone https://github.com/ethz-asl/kindr.git
+    else
+        cd ${CATKIN_WS_SRC}/kindr
+        git pull origin master
+    fi
+
+    # Copying rovio config files for arducam stereo cam and MPU6050
+    print_info "Copying rovio_config directory to $HOME ..." && sleep 1
+    if [ ! -d "${HOME}/rovio_config" ];then
+        cd ${HOME}
+        cp -R $ROOT/config/rovio_config $HOME/
+    fi
+
+    # Build pkgs
     if [ -f "${ROS_WS}/install_isolated/setup.bash" ]; then
         echo "sourcing ${ROS_WS}/install_isolated/setup.bash"
         source ${ROS_WS}/install_isolated/setup.bash
@@ -245,8 +250,12 @@ fi
 #
 print_info "Copying $ROOT/launch/arducam_mpu_openvins.launch to $HOME/" && sleep 1
 cp $ROOT/launch/arducam_mpu_openvins.launch $HOME/
+
 print_info "Copying $ROOT/launch/arducam_mpu.launch to $HOME/" && sleep 1
 cp $ROOT/launch/arducam_mpu.launch $HOME/
+
+print_info "Copying $ROOT/launch/arducam_mpu_rovio.launch to $HOME/" && sleep 1
+cp $ROOT/launch/arducam_mpu_rovio.launch $HOME/
 
 #
 # DONE!
