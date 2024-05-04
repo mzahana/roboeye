@@ -81,47 +81,6 @@ else
     print_warning "Skippig installation of Arducam drivers"
 fi
 
-if [ "$BUILD_ROS" = true ]; then
-    print_info "Building ROS $ROS_DISTRO"
-    print_warning "This may take a few hours on Raspberry Pi with limited memory ..." && sleep 1
-
-    print_info "Installing build tools... " && sleep 1
-    sudo apt-get update && sudo apt-get install -y \
-                            python3-rosdep2 \
-                            python3-rosinstall-generator \
-                            python3-vcstools \
-                            build-essential \
-                            # python3-pip \
-                            # python3-empy \
-                            # libboost-all-dev \
-                            # libconsole-bridge-dev \
-                            # libpoco-dev \
-                            # libtinyxml2-dev \
-                            # libtinyxml-dev \
-                            # qtbase5-dev \
-                            # python3-sip \
-                            # python3-pyqt5 \
-                            cmake \
-                            && sudo rm -rf /var/lib/apt/lists/* \
-                            && sudo apt-get clean
-
-    sudo pip install -U vcstool
-    sudo pip3 install git+https://github.com/catkin/catkin_tools.git
-
-    sudo rosdep init
-    rosdep update
-
-    cd $ROS_WS
-    rosinstall_generator desktop --rosdistro noetic --deps --tar > noetic-perception.rosinstall
-    vcs import --input noetic-perception.rosinstall ./src
-
-    rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
-
-    ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3
-else
-    print_warning "Skipping building ROS"
-fi
-
 #
 # i2c_device_ros: Required by mpu6050_driver
 #
@@ -159,8 +118,63 @@ else
     git pull origin noetic
 fi
 
+if [ "$BUILD_ROS" = true ]; then
+    print_info "Building ROS $ROS_DISTRO"
+    print_warning "This may take a few hours on Raspberry Pi with limited memory ..." && sleep 1
+
+# libconsole-bridge-dev \
+# libpoco-dev \
+# libtinyxml2-dev \
+# libtinyxml-dev \
+# qtbase5-dev \
+# python3-sip \
+# python3-pyqt5 \
+# python3-empy \
+    print_info "Installing build tools... " && sleep 1
+    sudo apt-get update && sudo apt-get install -y \
+                            python3-rosdep2 \
+                            python3-rosinstall-generator \
+                            python3-vcstools \
+                            build-essential \
+                            git \
+                            python3-pip \
+                            libboost-all-dev \
+                            cmake \
+                            libconsole-bridge-dev \
+                            python3-nose \
+                            libpoco-dev \
+                            libtinyxml2-dev \
+                            libtinyxml-dev \
+                            && sudo rm -rf /var/lib/apt/lists/* \
+                            && sudo apt-get clean
+
+    sudo pip install -U vcstool
+    sudo pip3 install git+https://github.com/catkin/catkin_tools.git
+
+    sudo rosdep init
+    rosdep update
+
+    cd $ROS_WS
+    cp $ROOT/noetic-perception.rosinstall $ROS_WS/
+    #rosinstall_generator desktop --rosdistro noetic --deps --tar > noetic-perception.rosinstall
+    vcs import --input noetic-perception.rosinstall ./src
+
+    rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
+
+    ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3
+else
+    print_warning "Skipping building ROS"
+fi
+
 
 if [ "$BUILD_OPENVINS" = true ]; then
+    if [ -f "${ROS_WS}/install_isolated/setup.bash" ]; then
+        print_info "Found ${ROS_WS}/install_isolated/setup.bash" && sleep 1
+    else
+        print_error "Could not find ${ROS_WS}/install_isolated/setup.bash"
+        print_error "Not building $CATKIN_WS. Compile ROS fisrt by setting BUILD_ROS=true before executing this script"
+        exit 1
+    fi
     #
     # OpenVins depndencies
     #
@@ -191,21 +205,34 @@ if [ "$BUILD_OPENVINS" = true ]; then
     cp ${ROOT}/config/openvins/* ${CATKIN_WS_SRC}/open_vins/config/rpi_vi_kit/
 
     # Building openvins
-    if [ -f "${ROS_WS}/install_isolated/setup.bash" ]; then
-        echo "sourcing ${ROS_WS}/install_isolated/setup.bash"
-        source ${ROS_WS}/install_isolated/setup.bash
-        print_info "Building $CATKIN_WS ... " && sleep 1
-        cd $CATKIN_WS
-        catkin build ov_msckf image_splitter_ros mpu6050_driver libcamera_ros
-    else
-        print_error "Could not find ${ROS_WS}/install_isolated/setup.bash"
-        print_error "Not building $CATKIN_WS"
-    fi
+    print_info "sourcing ${ROS_WS}/install_isolated/setup.bash"
+    source ${ROS_WS}/install_isolated/setup.bash
+    print_info "Building $CATKIN_WS ... " && sleep 1
+    cd $CATKIN_WS
+    catkin build ov_msckf image_splitter_ros mpu6050_driver libcamera_ros
+
+    print_info "Copying $ROOT/launch/arducam_mpu_openvins.launch to $HOME/" && sleep 1
+    cp $ROOT/launch/arducam_mpu_openvins.launch $HOME/
 else
     print_warning "SKipping building open_vins"
 fi
 
 if [ "$BUILD_ROVIO" = true ]; then
+    if [ -f "${ROS_WS}/install_isolated/setup.bash" ]; then
+        print_info "Found ${ROS_WS}/install_isolated/setup.bash" && sleep 1
+    else
+        print_error "Could not find ${ROS_WS}/install_isolated/setup.bash"
+        print_error "Not building $CATKIN_WS. Compile ROS fisrt by setting BUILD_ROS=true before executing this script"
+        exit 1
+    fi
+    print_info "Installing some dependencies..."
+    sudo apt-get update && sudo apt-get install -y \
+        libeigen3-dev \
+        libboost-all-dev \
+        libceres-dev \
+        && sudo rm -rf /var/lib/apt/lists/* \
+        && sudo apt-get clean
+        
     #
     # Cloning rovio
     #
@@ -242,16 +269,14 @@ if [ "$BUILD_ROVIO" = true ]; then
     fi
 
     # Build pkgs
-    if [ -f "${ROS_WS}/install_isolated/setup.bash" ]; then
-        echo "sourcing ${ROS_WS}/install_isolated/setup.bash"
-        source ${ROS_WS}/install_isolated/setup.bash
-        print_info "Building $CATKIN_WS ... " && sleep 1
-        cd $CATKIN_WS
-        catkin build rovio mpu6050_driver libcamera_ros -j 1 --mem-limit 50% --cmake-args -DCMAKE_BUILD_TYPE=Release -DMAKE_SCENE=OFF -DROVIO_NCAM=1 -DROVIO_PATCHSIZE=4 -DROVIO_NMAXFEATURE=15
-    else
-        print_error "Could not find ${ROS_WS}/install_isolated/setup.bash"
-        print_error "Not building $CATKIN_WS"
-    fi
+    echo "sourcing ${ROS_WS}/install_isolated/setup.bash"
+    source ${ROS_WS}/install_isolated/setup.bash
+    print_info "Building $CATKIN_WS ... " && sleep 1
+    cd $CATKIN_WS
+    catkin build rovio mpu6050_driver libcamera_ros -j 1 --mem-limit 50% --cmake-args -DCMAKE_BUILD_TYPE=Release -DMAKE_SCENE=OFF -DROVIO_NCAM=1 -DROVIO_PATCHSIZE=4 -DROVIO_NMAXFEATURE=20
+
+    print_info "Copying $ROOT/launch/arducam_mpu_rovio.launch to $HOME/" && sleep 1
+    cp $ROOT/launch/arducam_mpu_rovio.launch $HOME/
 else
     print_warning "SKipping building ROVIO"
 fi
@@ -259,14 +284,8 @@ fi
 #
 # Copy launch file
 #
-print_info "Copying $ROOT/launch/arducam_mpu_openvins.launch to $HOME/" && sleep 1
-cp $ROOT/launch/arducam_mpu_openvins.launch $HOME/
-
 print_info "Copying $ROOT/launch/arducam_mpu.launch to $HOME/" && sleep 1
 cp $ROOT/launch/arducam_mpu.launch $HOME/
-
-print_info "Copying $ROOT/launch/arducam_mpu_rovio.launch to $HOME/" && sleep 1
-cp $ROOT/launch/arducam_mpu_rovio.launch $HOME/
 
 #
 # DONE!
