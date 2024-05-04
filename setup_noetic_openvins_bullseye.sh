@@ -55,6 +55,7 @@ if [ "$BUILD_ROS" = true ]; then
                             libboost-all-dev \
                             libconsole-bridge-dev \
                             libpoco-dev \
+                            libtinyxml2-dev \
                             cmake \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
