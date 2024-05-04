@@ -52,6 +52,7 @@ if [ "$BUILD_ROS" = true ]; then
                             build-essential \
                             python3-pip \
                             python3-empy \
+                            libboost-all-dev \
                             cmake \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
