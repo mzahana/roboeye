@@ -50,12 +50,12 @@ if [ "$BUILD_ROS" = true ]; then
                             python3-rosinstall-generator \
                             python3-vcstools \
                             build-essential \
+                            python3-pip \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
-    
+
     sudo pip install -U vcstool
     
-    sudo apt upgrade -y
 
     sudo rosdep init
     rosdep update
