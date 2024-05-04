@@ -58,7 +58,6 @@ if [ "$BUILD_ROS" = true ]; then
                             libtinyxml2-dev \
                             libtinyxml-dev \
                             qtbase5-dev \
-                            qt5-default \
                             cmake \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
