@@ -54,6 +54,7 @@ if [ "$BUILD_ROS" = true ]; then
                             python3-empy \
                             libboost-all-dev \
                             libconsole-bridge-dev \
+                            libpoco-dev \
                             cmake \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
