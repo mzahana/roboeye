@@ -56,6 +56,7 @@ if [ "$BUILD_ROS" = true ]; then
                             libconsole-bridge-dev \
                             libpoco-dev \
                             libtinyxml2-dev \
+                            libtinyxml-dev \
                             cmake \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
