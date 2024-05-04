@@ -51,6 +51,7 @@ if [ "$BUILD_ROS" = true ]; then
                             python3-vcstools \
                             build-essential \
                             python3-pip \
+                            cmake \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
 
