@@ -58,6 +58,8 @@ if [ "$BUILD_ROS" = true ]; then
                             libtinyxml2-dev \
                             libtinyxml-dev \
                             qtbase5-dev \
+                            python3-sip \
+                            python3-pyqt5 \
                             cmake \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
