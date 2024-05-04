@@ -19,6 +19,9 @@ else
     exit 1
 fi
 
+print_info "sudo apt upgrade"
+sudo apt update && sudo apt upgrade -y
+
 #
 # Some ENV variables
 #
