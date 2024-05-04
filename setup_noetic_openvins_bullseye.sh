@@ -40,6 +40,47 @@ if [ ! -d "$CATKIN_WS" ]; then
     mkdir -p ${CATKIN_WS}/src
 fi
 
+#
+# NOTE: For some reason ARDUCAM needs to be installed first as it installs other pkgs needed by ROS
+# Arducam drivers
+# This is to use Arducam camera array adapter
+# Example product: 
+#   https://www.uctronics.com/arducam-1mp-4-quadrascopic-camera-bundle-kit-for-raspberry-pi-nvidia-jetson-nano-xavier-nx.html
+# Ref: https://docs.arducam.com/Raspberry-Pi-Camera/Multi-Camera-CamArray/quick-start/
+#
+if [ "$INSTALL_ARDUCAM" = true ]; then
+    print_info "Installing Arducam drivers..." && sleep 1
+
+    cd ${HOME}
+    wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
+    chmod +x install_pivariety_pkgs.sh
+    ./install_pivariety_pkgs.sh -p libcamera_dev
+    ./install_pivariety_pkgs.sh -p libcamera_apps
+
+    # Path to the config.txt file
+    CONFIG_FILE="/boot/config.txt"
+
+    # The line you want to add
+    LINE_TO_ADD="dtoverlay=arducam-pivariety"
+
+    # Check if the line already exists in the file
+    if ! sudo grep -q "$LINE_TO_ADD" "$CONFIG_FILE"; then
+    # If the line does not exist, append it after [all]
+    if sudo grep -q "\[all\]" "$CONFIG_FILE"; then
+        # Using sudo with sed to append after [all]. A temporary file is used for sed's in-place editing to ensure sudo permissions are respected
+        sudo sed -i "/\[all\]/a $LINE_TO_ADD" "$CONFIG_FILE"
+    else
+        # Using echo with sudo to append at the end of the file
+        echo "$LINE_TO_ADD" | sudo tee -a "$CONFIG_FILE" > /dev/null
+    fi
+    echo "Line added to config.txt"
+    else
+    echo "Line already exists in config.txt"
+    fi
+else
+    print_warning "Skippig installation of Arducam drivers"
+fi
+
 if [ "$BUILD_ROS" = true ]; then
     print_info "Building ROS $ROS_DISTRO"
     print_warning "This may take a few hours on Raspberry Pi with limited memory ..." && sleep 1
@@ -50,22 +91,22 @@ if [ "$BUILD_ROS" = true ]; then
                             python3-rosinstall-generator \
                             python3-vcstools \
                             build-essential \
-                            python3-pip \
-                            python3-empy \
-                            libboost-all-dev \
-                            libconsole-bridge-dev \
-                            libpoco-dev \
-                            libtinyxml2-dev \
-                            libtinyxml-dev \
-                            qtbase5-dev \
-                            python3-sip \
-                            python3-pyqt5 \
+                            # python3-pip \
+                            # python3-empy \
+                            # libboost-all-dev \
+                            # libconsole-bridge-dev \
+                            # libpoco-dev \
+                            # libtinyxml2-dev \
+                            # libtinyxml-dev \
+                            # qtbase5-dev \
+                            # python3-sip \
+                            # python3-pyqt5 \
                             cmake \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
 
     sudo pip install -U vcstool
-    
+    sudo pip3 install git+https://github.com/catkin/catkin_tools.git
 
     sudo rosdep init
     rosdep update
@@ -76,7 +117,7 @@ if [ "$BUILD_ROS" = true ]; then
 
     rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
 
-    ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
+    ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3
 else
     print_warning "Skipping building ROS"
 fi
@@ -118,46 +159,6 @@ else
     git pull origin noetic
 fi
 
-
-#
-# Arducam drivers
-# This is to use Arducam camera array adapter
-# Example product: 
-#   https://www.uctronics.com/arducam-1mp-4-quadrascopic-camera-bundle-kit-for-raspberry-pi-nvidia-jetson-nano-xavier-nx.html
-# Ref: https://docs.arducam.com/Raspberry-Pi-Camera/Multi-Camera-CamArray/quick-start/
-#
-if [ "$INSTALL_ARDUCAM" = true ]; then
-    print_info "Installing Arducam drivers..." && sleep 1
-
-    cd ${HOME}
-    wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
-    chmod +x install_pivariety_pkgs.sh
-    ./install_pivariety_pkgs.sh -p libcamera_dev
-    ./install_pivariety_pkgs.sh -p libcamera_apps
-
-    # Path to the config.txt file
-    CONFIG_FILE="/boot/config.txt"
-
-    # The line you want to add
-    LINE_TO_ADD="dtoverlay=arducam-pivariety"
-
-    # Check if the line already exists in the file
-    if ! sudo grep -q "$LINE_TO_ADD" "$CONFIG_FILE"; then
-    # If the line does not exist, append it after [all]
-    if sudo grep -q "\[all\]" "$CONFIG_FILE"; then
-        # Using sudo with sed to append after [all]. A temporary file is used for sed's in-place editing to ensure sudo permissions are respected
-        sudo sed -i "/\[all\]/a $LINE_TO_ADD" "$CONFIG_FILE"
-    else
-        # Using echo with sudo to append at the end of the file
-        echo "$LINE_TO_ADD" | sudo tee -a "$CONFIG_FILE" > /dev/null
-    fi
-    echo "Line added to config.txt"
-    else
-    echo "Line already exists in config.txt"
-    fi
-else
-    print_warning "Skippig installation of Arducam drivers"
-fi
 
 if [ "$BUILD_OPENVINS" = true ]; then
     #
