@@ -133,6 +133,18 @@ else
     git pull origin noetic
 fi
 
+#
+# image_splitter_ros (for splitting stereo Arducam cameras)
+#
+print_info "Cloning image_splitter_ros ..." && sleep 1
+if [ ! -d "${CATKIN_WS_SRC}/image_splitter_ros" ];then
+    cd ${CATKIN_WS_SRC}
+    git clone -b noetic https://github.com/mzahana/image_splitter_ros.git
+else
+    cd ${CATKIN_WS_SRC}/image_splitter_ros
+    git pull origin noetic
+fi
+
 if [ "$BUILD_ROS" = true ]; then
     print_info "Building ROS $ROS_DISTRO"
     print_warning "This may take a few hours on Raspberry Pi with limited memory ..." && sleep 1
@@ -179,6 +191,7 @@ if [ "$BUILD_ROS" = true ]; then
     sudo pip install -U vcstool
     sudo pip3 install git+https://github.com/catkin/catkin_tools.git
     sudo pip install psutil
+    sudo pip install defusedxml
 
     sudo rosdep init
     rosdep update
