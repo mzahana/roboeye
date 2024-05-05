@@ -148,6 +148,18 @@ if [ "$BUILD_ROS" = true ]; then
                             libpoco-dev \
                             libtinyxml2-dev \
                             libtinyxml-dev \
+                            python3-empy \
+                            libcurl4-openssl-dev \
+                            libgtest-dev \
+                            liblz4-dev \
+                            libeigen3-dev \
+                            liburdfdom-headers-dev \
+                            liburdfdom-dev \
+                            uuid-dev \
+                            libbz2-dev \
+                            libgpgme-dev \
+                            libopencv-dev \
+                            liblog4cxx-dev \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
 
