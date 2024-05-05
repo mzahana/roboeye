@@ -186,6 +186,7 @@ if [ "$BUILD_ROS" = true ]; then
                             liblog4cxx-dev \
                             libyaml-cpp-dev \
                             python3-pycryptodome \
+                            tmux \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
 
