@@ -318,7 +318,7 @@ if [ "$BUILD_ROVIO" = true ]; then
     source ${ROS_WS}/install_isolated/setup.bash
     print_info "Building $CATKIN_WS ... " && sleep 1
     cd $CATKIN_WS
-    catkin build rovio mpu6050_driver libcamera_ros image_splitter_ros -j 1 --mem-limit 50% --cmake-args -DCMAKE_BUILD_TYPE=Release -DMAKE_SCENE=OFF -DROVIO_NCAM=1 -DROVIO_PATCHSIZE=4 -DROVIO_NMAXFEATURE=20
+    catkin build rovio mpu6050_driver libcamera_ros image_splitter_ros -j 1 --mem-limit 50% --cmake-args -DCMAKE_BUILD_TYPE=Release -DMAKE_SCENE=OFF -DROVIO_NCAM=1 -DROVIO_PATCHSIZE=4 -DROVIO_NMAXFEATURE=15
 
     print_info "Copying $ROOT/launch/arducam_mpu_rovio.launch to $HOME/" && sleep 1
     cp $ROOT/launch/arducam_mpu_rovio.launch $HOME/
