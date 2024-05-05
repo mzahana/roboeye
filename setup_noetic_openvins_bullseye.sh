@@ -172,6 +172,7 @@ if [ "$BUILD_ROS" = true ]; then
                             libgpgme-dev \
                             libopencv-dev \
                             liblog4cxx-dev \
+                            libyaml-cpp-dev \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
 
