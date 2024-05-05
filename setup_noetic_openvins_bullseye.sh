@@ -185,6 +185,7 @@ if [ "$BUILD_ROS" = true ]; then
                             libopencv-dev \
                             liblog4cxx-dev \
                             libyaml-cpp-dev \
+                            python3-pycryptodome \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
 
