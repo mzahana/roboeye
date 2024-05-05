@@ -255,10 +255,6 @@
     uri: https://github.com/ros-gbp/metapackages-release/archive/release/noetic/ros_core/1.5.0-1.tar.gz
     version: metapackages-release-release-noetic-ros_core-1.5.0-1
 - tar:
-    local-name: metapackages/viz
-    uri: https://github.com/ros-gbp/metapackages-release/archive/release/noetic/viz/1.5.0-1.tar.gz
-    version: metapackages-release-release-noetic-viz-1.5.0-1
-- tar:
     local-name: navigation_msgs/map_msgs
     uri: https://github.com/ros-gbp/navigation_msgs-release/archive/release/noetic/map_msgs/1.14.1-1.tar.gz
     version: navigation_msgs-release-release-noetic-map_msgs-1.14.1-1
@@ -486,10 +482,6 @@
     local-name: vision_opencv/cv_bridge
     uri: https://github.com/ros-gbp/vision_opencv-release/archive/release/noetic/cv_bridge/1.16.2-1.tar.gz
     version: vision_opencv-release-release-noetic-cv_bridge-1.16.2-1
-- tar:
-    local-name: webkit_dependency
-    uri: https://github.com/ros-gbp/webkit_dependency-release/archive/release/noetic/webkit_dependency/1.1.2-1.tar.gz
-    version: webkit_dependency-release-release-noetic-webkit_dependency-1.1.2-1
 - tar:
     local-name: xacro
     uri: https://github.com/ros-gbp/xacro-release/archive/release/noetic/xacro/1.14.18-1.tar.gz
