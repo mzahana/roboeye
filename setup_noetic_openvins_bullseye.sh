@@ -192,6 +192,7 @@ if [ "$BUILD_ROS" = true ]; then
     sudo pip3 install git+https://github.com/catkin/catkin_tools.git
     sudo pip install psutil
     sudo pip install defusedxml
+    sudo pip install netifaces
 
     sudo rosdep init
     rosdep update
