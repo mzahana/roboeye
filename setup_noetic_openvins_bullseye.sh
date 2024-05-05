@@ -177,6 +177,7 @@ if [ "$BUILD_ROS" = true ]; then
 
     sudo pip install -U vcstool
     sudo pip3 install git+https://github.com/catkin/catkin_tools.git
+    sudo pip install psutil
 
     sudo rosdep init
     rosdep update
