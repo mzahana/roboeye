@@ -19,8 +19,20 @@ else
     exit 1
 fi
 
-print_info "sudo apt upgrade"
-sudo apt update && sudo apt upgrade -y
+# Prompt the user for confirmation
+read -p "Do you want to upgrade system packages? (yes/no): " answer
+
+# Check the user's response
+if [[ $answer == "yes" ]]; then
+    # Perform system upgrade
+    sudo apt update && sudo apt upgrade -y
+    print_info "System packages upgraded successfully."
+elif [[ $answer == "no" ]]; then
+    print_warning "Skipping system package upgrade."
+else
+    print_error "Invalid input. Please enter 'yes' or 'no'."
+    exit 1
+fi
 
 #
 # Some ENV variables
