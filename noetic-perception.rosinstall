@@ -227,10 +227,6 @@
     uri: https://github.com/ros-gbp/joint_state_publisher-release/archive/release/noetic/joint_state_publisher/1.15.1-1.tar.gz
     version: joint_state_publisher-release-release-noetic-joint_state_publisher-1.15.1-1
 - tar:
-    local-name: joint_state_publisher/joint_state_publisher_gui
-    uri: https://github.com/ros-gbp/joint_state_publisher-release/archive/release/noetic/joint_state_publisher_gui/1.15.1-1.tar.gz
-    version: joint_state_publisher-release-release-noetic-joint_state_publisher_gui-1.15.1-1
-- tar:
     local-name: kdl_parser/kdl_parser
     uri: https://github.com/ros-gbp/kdl_parser-release/archive/release/noetic/kdl_parser/1.14.2-1.tar.gz
     version: kdl_parser-release-release-noetic-kdl_parser-1.14.2-1
