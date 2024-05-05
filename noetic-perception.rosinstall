@@ -203,9 +203,21 @@
     uri: https://github.com/ros-gbp/gl_dependency-release/archive/release/noetic/gl_dependency/1.1.2-1.tar.gz
     version: gl_dependency-release-release-noetic-gl_dependency-1.1.2-1
 - tar:
-    local-name: image_common/image_common
-    uri: https://github.com/ros-gbp/image_common-release/archive/release/noetic/image_common/1.12.0-1.tar.gz
-    version: image_common-release-release-noetic-image_common-1.12.0-1
+    local-name: image_common/camera_calibration_parsers
+    uri: https://github.com/ros-gbp/image_common-release/archive/release/noetic/camera_calibration_parsers/1.12.0-1.tar.gz
+    version: image_common-release-release-noetic-camera_calibration_parsers-1.12.0-1
+- tar:
+    local-name: image_common/camera_info_manager
+    uri: https://github.com/ros-gbp/image_common-release/archive/release/noetic/camera_info_manager/1.12.0-1.tar.gz
+    version: image_common-release-release-noetic-camera_info_manager-1.12.0-1
+- tar:
+    local-name: image_common/image_transport
+    uri: https://github.com/ros-gbp/image_common-release/archive/release/noetic/image_transport/1.12.0-1.tar.gz
+    version: image_common-release-release-noetic-image_transport-1.12.0-1
+- tar:
+    local-name: image_common/image_transport
+    uri: https://github.com/ros-gbp/image_common-release/archive/release/noetic/image_transport/1.12.0-1.tar.gz
+    version: image_common-release-release-noetic-image_transport-1.12.0-1
 - tar:
     local-name: interactive_markers
     uri: https://github.com/ros-gbp/interactive_markers-release/archive/release/noetic/interactive_markers/1.12.0-1.tar.gz
