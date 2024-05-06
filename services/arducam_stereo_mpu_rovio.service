@@ -1,7 +1,7 @@
 [Unit]
 Description=Arducam Stereo MPU ROVIO Service
-After=multi-user.target
-Wants=network-online.target
+After=roscore.service
+#Wants=network-online.target
 
 [Service]
 Type=simple

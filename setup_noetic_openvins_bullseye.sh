@@ -340,17 +340,11 @@ fi
 #
 # Copy system service file
 #
-print_info "Copying $ROOT/services/arducam_openvins.sh to $HOME/services/ "
-cp $ROOT/services/arducam_openvins.sh $HOME/services/
-print_info "Copying $ROOT/services/arducam_rovio.sh to $HOME/services/ "
-cp $ROOT/services/arducam_rovio.sh $HOME/services/
-print_info "Copying $ROOT/services/mavros.sh to $HOME/services/ "
-cp $ROOT/services/mavros.sh $HOME/services/
+print_info "Copying service .sh scripts from $ROOT/services/ to $HOME/services/ "
+cp $ROOT/services/*.sh $HOME/services/
 
-print_info "Copying $ROOT/services/arducam_stereo_mpu_rovio.service to /etc/systemd/system/"
-sudo cp $ROOT/services/arducam_stereo_mpu_rovio.service /etc/systemd/system/
-print_info "Copying $ROOT/services/arducam_stereo_mpu_rovio.service to /etc/systemd/system/"
-sudo cp $ROOT/services/mavros.service /etc/systemd/system/
+print_info "Copying .service files from $ROOT/services/ to /etc/systemd/system/"
+sudo cp $ROOT/services/*.service /etc/systemd/system/
 
  sudo systemctl daemon-reload
 
@@ -365,12 +359,8 @@ fi
 #
 # Copy launch file
 #
-print_info "Copying $ROOT/launch/arducam_mpu.launch to $HOME/launch/" && sleep 1
-cp $ROOT/launch/arducam_mpu.launch $HOME/launch/
-print_info "Copying $ROOT/launch/arducam_mpu_rovio.launch to $HOME/" && sleep 1
-cp $ROOT/launch/arducam_mpu_rovio.launch $HOME/
-print_info "Copying $ROOT/launch/arducam_mpu_openvins.launch to $HOME/launch" && sleep 1
-cp $ROOT/launch/arducam_mpu_openvins.launch $HOME/launch
+print_info "Copying launch files from $ROOT/launch/ to $HOME/launch/" && sleep 1
+cp $ROOT/launch/*.launch $HOME/launch
 
 #
 # Copy usefult scripts
@@ -380,6 +370,7 @@ if [ ! -d "${HOME}/scripts" ];then
     mkdir -p $HOME/scripts
 fi
 cp $ROOT/scripts/print_pose.py $HOME/scripts/
+cp $ROOT/scripts/vio_watchdog.py $HOME/scripts/
 
 #
 # DONE!

@@ -1,0 +1,20 @@
+[Unit]
+Description=Launcher for the ROS master, parameter server and rosout logging node
+After=network.target
+
+[Service]
+User=vio
+Environment=ROS_DISTRO=noetic
+Environment=ROS_ROOT=/home/vio/ros_noetic/catkin_ws/install_isolated
+Environment=ROS_PACKAGE_PATH=/home/vio/ros_noetic/catkin_ws/install_isolated/share
+Environment=ROS_PORT=11311
+Environment=ROS_MASTER_URI=http://localhost:11311
+Environment=CMAKE_PREFIX_PATH=/home/vio/ros_noetic/catkin_ws/install_isolated/
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/vio/ros_noetic/catkin_ws/install_isolated/bin
+Environment=LD_LIBRARY_PATH=/home/vio/ros_noetic/catkin_ws/install_isolated/lib
+Environment=PYTHONPATH=/home/vio/ros_noetic/catkin_ws/install_isolated/lib/python3/dist-packages
+ExecStart=/home/vio/ros_noetic/catkin_ws/install_isolated/bin/roscore -p $ROS_PORT
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
