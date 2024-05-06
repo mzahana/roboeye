@@ -22,7 +22,7 @@ set_ros_ip() {
 
 # This is not needed if you are running the system completely locally
 # and transferring data, e.g., serially.
-set_ros_ip
+#set_ros_ip
 
 # Start the ROS nodes
 roslaunch /home/vio/launch/arducam_mpu_rovio.launch
