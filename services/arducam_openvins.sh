@@ -4,6 +4,7 @@ source /home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash
 source /home/vio/catkin_ws/devel/setup.bash
 
 export ROS_MASTER_URI=http://localhost:11311
+export ROS_HOME=/home/vio/logs
 
 # Function to check and set IP address
 set_ros_ip() {

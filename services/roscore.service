@@ -13,6 +13,7 @@ Environment=CMAKE_PREFIX_PATH=/home/vio/ros_noetic/catkin_ws/install_isolated/
 Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/vio/ros_noetic/catkin_ws/install_isolated/bin
 Environment=LD_LIBRARY_PATH=/home/vio/ros_noetic/catkin_ws/install_isolated/lib
 Environment=PYTHONPATH=/home/vio/ros_noetic/catkin_ws/install_isolated/lib/python3/dist-packages
+Environment=ROS_HOME=/home/vio/logs
 ExecStart=/home/vio/ros_noetic/catkin_ws/install_isolated/bin/roscore -p $ROS_PORT
 Restart=always
 StandardOutput=append:/home/vio/logs/roscore_service.log
