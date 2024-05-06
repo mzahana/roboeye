@@ -2,6 +2,7 @@
 
 source /home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash
 source /home/vio/catkin_ws/devel/setup.bash
+source /home/vio/mavros_ws/devel/setup.bash
 
 export ROS_MASTER_URI=http://localhost:11311
 
@@ -21,9 +22,10 @@ set_ros_ip() {
 
 # This is not needed if you are running the system completely locally
 # and transferring data, e.g., serially.
-set_ros_ip
+#set_ros_ip
 
 # Start the ROS nodes
-roslaunch /home/vio/launch/arducam_mpu_openvins.launch
+BAUDRATE=921600
+roslaunch mavros px4.launch fcu_url:=/dev/ttyAMA0:$BAUDRATE
 
 #wait

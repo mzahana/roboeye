@@ -56,13 +56,22 @@ The camera, imu, and openvins can be run upon system startup using the the syste
 To add to `.bashrc`
 
 ```sh
-source /home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash
-source /home/vio/catkin_ws/devel/setup.bash
+if [ -f "/home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash" ]; then
+    source /home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash
+fi
+
+if [ -f "/home/vio/catkin_ws/devel/setup.bash" ]; then
+    source /home/vio/catkin_ws/devel/setup.bash
+fi
+
+if [ -f "/home/vio/mavros_ws/devel/setup.bash" ]; then
+    source /home/vio/mavros_ws/devel/setup.bash
+fi
 
 export ROS_MASTER_URI=http://localhost:11311
 #export ROS_HOSTNAME=192.168.8.124
 
-# Assuming arducam_mpu_openvins is copied to /etc/systemd/system/
+# Assuming arducam_mpu_openvins is available in /etc/systemd/system/
 alias run_openvins='roslaunch $HOME/arducam_mpu_openvins.launch'
 alias enable_openvins_service='sudo systemctl enable arducam_stereo_mpu_openvins.service'
 alias disable_openvins_service='sudo systemctl disable arducam_stereo_mpu_openvins.service'
@@ -71,12 +80,21 @@ alias stop_openvins_service='sudo systemctl stop arducam_stereo_mpu_openvins.ser
 alias status_openvins_service='sudo systemctl status arducam_stereo_mpu_openvins.service'
 alias restart_openvins_service='sudo systemctl restart arducam_stereo_mpu_openvins.service'
 
-# Assuming arducam_stereo_mpu_rovio.service is copied to /etc/systemd/system/
-alias run_rovio='roslaunch $HOME/arducam_mpu_rovio.launch'
+# Assuming arducam_stereo_mpu_rovio.service is available in /etc/systemd/system/
+alias run_rovio='roslaunch $HOME/launch/arducam_mpu_rovio.launch'
 alias enable_rovio_service='sudo systemctl enable arducam_stereo_mpu_rovio.service'
 alias disable_rovio_service='sudo systemctl disable arducam_stereo_mpu_rovio.service'
 alias start_rovio_service='sudo systemctl start arducam_stereo_mpu_rovio.service'
 alias stop_rovio_service='sudo systemctl stop arducam_stereo_mpu_rovio.service'
 alias status_rovio_service='sudo systemctl status arducam_stereo_mpu_rovio.service'
 alias restart_rovio_service='sudo systemctl restart arducam_stereo_mpu_rovio.service'
+
+# Assuming mavros.service is available in /etc/systemd/system/
+alias run_mavros='roslaunch mavros px4.launch fcu_url:=/dev/ttyAMA0:921600'
+alias enable_mavros_service='sudo systemctl enable mavros.service'
+alias disable_mavros_service='sudo systemctl disable mavros.service'
+alias start_mavros_service='sudo systemctl start mavros.service'
+alias stop_mavros_service='sudo systemctl stop mavros.service'
+alias status_mavros_service='sudo systemctl status mavros.service'
+alias restart_mavros_service='sudo systemctl restart mavros.service'
 ```

@@ -24,6 +24,6 @@ set_ros_ip() {
 set_ros_ip
 
 # Start the ROS nodes
-roslaunch /home/vio/arducam_mpu_rovio.launch
+roslaunch /home/vio/launch/arducam_mpu_rovio.launch
 
 #wait

@@ -255,9 +255,6 @@ if [ "$BUILD_OPENVINS" = true ]; then
     print_info "Building $CATKIN_WS ... " && sleep 1
     cd $CATKIN_WS
     catkin build ov_msckf image_splitter_ros mpu6050_driver libcamera_ros
-
-    print_info "Copying $ROOT/launch/arducam_mpu_openvins.launch to $HOME/" && sleep 1
-    cp $ROOT/launch/arducam_mpu_openvins.launch $HOME/
 else
     print_warning "SKipping building open_vins"
 fi
@@ -319,18 +316,70 @@ if [ "$BUILD_ROVIO" = true ]; then
     print_info "Building $CATKIN_WS ... " && sleep 1
     cd $CATKIN_WS
     catkin build rovio mpu6050_driver libcamera_ros image_splitter_ros -j 1 --mem-limit 50% --cmake-args -DCMAKE_BUILD_TYPE=Release -DMAKE_SCENE=OFF -DROVIO_NCAM=1 -DROVIO_PATCHSIZE=4 -DROVIO_NMAXFEATURE=15
-
-    print_info "Copying $ROOT/launch/arducam_mpu_rovio.launch to $HOME/" && sleep 1
-    cp $ROOT/launch/arducam_mpu_rovio.launch $HOME/
 else
     print_warning "SKipping building ROVIO"
+fi
+
+
+#
+# Create logs directory
+#
+if [ ! -d "${HOME}/logs" ];then
+    print_info "Creating $HOME/logs ..."
+    mkdir -p $HOME/logs
+fi
+
+#
+# Create services directory
+#
+if [ ! -d "${HOME}/services" ];then
+    print_info "Creating $HOME/services ..."
+    mkdir -p $HOME/services
+fi
+
+#
+# Copy system service file
+#
+print_info "Copying $ROOT/services/arducam_openvins.sh to $HOME/services/ "
+cp $ROOT/services/arducam_openvins.sh $HOME/services/
+print_info "Copying $ROOT/services/arducam_rovio.sh to $HOME/services/ "
+cp $ROOT/services/arducam_rovio.sh $HOME/services/
+print_info "Copying $ROOT/services/mavros.sh to $HOME/services/ "
+cp $ROOT/services/mavros.sh $HOME/services/
+
+print_info "Copying $ROOT/services/arducam_stereo_mpu_rovio.service to /etc/systemd/system/"
+sudo cp $ROOT/services/arducam_stereo_mpu_rovio.service /etc/systemd/system/
+print_info "Copying $ROOT/services/arducam_stereo_mpu_rovio.service to /etc/systemd/system/"
+sudo cp $ROOT/services/mavros.service /etc/systemd/system/
+
+ sudo systemctl daemon-reload
+
+#
+# Create launch directory
+#
+if [ ! -d "${HOME}/launch" ];then
+    print_info "Creating $HOME/launch ..."
+    mkdir -p $HOME/launch
 fi
 
 #
 # Copy launch file
 #
-print_info "Copying $ROOT/launch/arducam_mpu.launch to $HOME/" && sleep 1
-cp $ROOT/launch/arducam_mpu.launch $HOME/
+print_info "Copying $ROOT/launch/arducam_mpu.launch to $HOME/launch/" && sleep 1
+cp $ROOT/launch/arducam_mpu.launch $HOME/launch/
+print_info "Copying $ROOT/launch/arducam_mpu_rovio.launch to $HOME/" && sleep 1
+cp $ROOT/launch/arducam_mpu_rovio.launch $HOME/
+print_info "Copying $ROOT/launch/arducam_mpu_openvins.launch to $HOME/launch" && sleep 1
+cp $ROOT/launch/arducam_mpu_openvins.launch $HOME/launch
+
+#
+# Copy usefult scripts
+#
+if [ ! -d "${HOME}/scripts" ];then
+    print_info "Creating $HOME/scripts ..."
+    mkdir -p $HOME/scripts
+fi
+cp $ROOT/scripts/print_pose.py $HOME/scripts/
 
 #
 # DONE!

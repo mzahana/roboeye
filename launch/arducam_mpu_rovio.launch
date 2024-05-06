@@ -18,6 +18,7 @@
      <remap from="imu0" to="/imu/data_raw" />
      <remap from="cam0/image_raw" to="/left_image" />
      <remap from="cam1/image_raw" to="/right_image" />
+     <remap from="/rovio/odometry" to="/mavros/odometry/out" />
      </node>
 
 </launch>
