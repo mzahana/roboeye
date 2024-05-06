@@ -99,7 +99,7 @@ alias status_mavros_service='sudo systemctl status mavros.service'
 alias restart_mavros_service='sudo systemctl restart mavros.service'
 
 alias enable_all_services='sudo systemctl enable roscore.service && sudo systemctl enable mavros.service && sudo systemctl enable arducam_stereo_mpu_rovio.service && sudo systemctl enable vio_watchdog.service'
-alias disable_all_services='sudo systemctl disable roscore.service && sudo systemctl disble mavros.service && sudo systemctl disable arducam_stereo_mpu_rovio.service && sudo systemctl disable vio_watchdog.service'
+alias disable_all_services='sudo systemctl disable roscore.service && sudo systemctl disable mavros.service && sudo systemctl disable arducam_stereo_mpu_rovio.service && sudo systemctl disable vio_watchdog.service'
 
 alias start_all_services='sudo systemctl start roscore.service && sudo systemctl start mavros.service && sudo systemctl start arducam_stereo_mpu_rovio.service && sudo systemctl start vio_watchdog.service'
 alias stop_all_services='sudo systemctl stop roscore.service && sudo systemctl stop mavros.service && sudo systemctl stop arducam_stereo_mpu_rovio.service && sudo systemctl stop vio_watchdog.service'
