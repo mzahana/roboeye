@@ -15,6 +15,8 @@ Environment=LD_LIBRARY_PATH=/home/vio/ros_noetic/catkin_ws/install_isolated/lib
 Environment=PYTHONPATH=/home/vio/ros_noetic/catkin_ws/install_isolated/lib/python3/dist-packages
 ExecStart=/home/vio/ros_noetic/catkin_ws/install_isolated/bin/roscore -p $ROS_PORT
 Restart=always
+StandardOutput=append:/home/vio/logs/roscore_service.log
+StandardError=append:/home/vio/logs/roscore_service.log
 
 [Install]
 WantedBy=multi-user.target
