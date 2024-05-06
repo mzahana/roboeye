@@ -1,0 +1,17 @@
+[Unit]
+Description=Launches all the nodes of the VIO system
+After=network.target
+Requires=network.target
+#Wants=network-online.target
+
+[Service]
+Type=simple
+User=vio
+ExecStart=/bin/bash /home/vio/services/vio_system.sh
+StandardOutput=append:/home/vio/logs/vio_system_service.log
+StandardError=append:/home/vio/logs/vio_system_service.log
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
