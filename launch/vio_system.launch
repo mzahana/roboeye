@@ -10,7 +10,7 @@
 
     <!-- MAVROS -->
     <arg name="fcu_url" default="/dev/ttyAMA0:921600"/>
-    <include file="$(find mavros)/launch/px4..launch" >
+    <include file="$(find mavros)/launch/px4.launch" >
         <arg name="fcu_url" value="$(arg fcu_url)"/>
     </include>
 
