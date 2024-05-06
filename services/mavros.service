@@ -1,6 +1,7 @@
 [Unit]
 Description=MAVROS Service
 After=roscore.service
+Requires=roscore.service
 #Wants=network-online.target
 
 [Service]
@@ -9,9 +10,8 @@ User=vio
 ExecStart=/bin/bash /home/vio/services/mavros.sh
 StandardOutput=append:/home/vio/logs/mavros_service.log
 StandardError=append:/home/vio/logs/mavros_service.log
-RemainAfterExit=yes
 Restart=always
-RestartSec=3
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

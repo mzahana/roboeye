@@ -1,6 +1,7 @@
 [Unit]
 Description=ROVIO Service
-After=roscore.service mpu6050.service arducam_stereo.service
+After=roscore.service
+Requires=roscore.service
 #Wants=network-online.target
 
 [Service]
@@ -9,9 +10,8 @@ User=vio
 ExecStart=/bin/bash /home/vio/services/rovio.sh
 StandardOutput=append:/home/vio/logs/rovio_service.log
 StandardError=append:/home/vio/logs/rovio_service.log
-RemainAfterExit=yes
 Restart=always
-RestartSec=3
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

@@ -1,6 +1,7 @@
 [Unit]
 Description=Arducam Stereo Camera Service
-After=mpu6050.service roscore.service
+After=roscore.service
+Requires=roscore.service
 #Wants=network-online.target
 
 [Service]
@@ -9,9 +10,8 @@ User=vio
 ExecStart=/bin/bash /home/vio/services/arducam_stereo.sh
 StandardOutput=append:/home/vio/logs/arducam_stereo_service.log
 StandardError=append:/home/vio/logs/arducam_stereo_service.log
-RemainAfterExit=yes
 Restart=always
-RestartSec=3
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

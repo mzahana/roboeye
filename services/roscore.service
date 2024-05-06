@@ -16,6 +16,7 @@ Environment=PYTHONPATH=/home/vio/ros_noetic/catkin_ws/install_isolated/lib/pytho
 Environment=ROS_HOME=/home/vio/logs
 ExecStart=/home/vio/ros_noetic/catkin_ws/install_isolated/bin/roscore -p $ROS_PORT
 Restart=always
+RestartSec=5
 StandardOutput=append:/home/vio/logs/roscore_service.log
 StandardError=append:/home/vio/logs/roscore_service.log
 
