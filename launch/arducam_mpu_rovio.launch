@@ -14,7 +14,7 @@
      <node pkg="rovio" type="rovio_node" name="rovio" output="screen">
         <param name="filter_config" value="$(arg filter_config)"/>
         <param name="camera0_config" value="$(arg cam0_config)"/>
-        <param name="health_monitor_enabled" value="false"/>
+        <param name="health_monitor_enabled" value="true"/>
         <param name="velocity_to_consider_static" value="0.1"/>
         <param name="max_subsequent_unhealthy_updates" value="2"/>
         <param name="healthy_feature_distance_cov" value="0.5"/>
