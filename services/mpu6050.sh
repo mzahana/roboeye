@@ -24,7 +24,7 @@ set_ros_ip() {
 # and transferring data, e.g., serially.
 #set_ros_ip
 
-# Start the ROS nodes
-roslaunch /home/vio/launch/arducam_mpu_rovio.launch
+# Start the ROS node
+roslaunch mpu6050_driver mpu6050_driver.launch
 
 #wait
