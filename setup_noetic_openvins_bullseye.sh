@@ -115,7 +115,7 @@ fi
 print_info "Cloning mpu6050_driver ..." && sleep 1
 if [ ! -d "${CATKIN_WS_SRC}/mpu6050_driver" ];then
     cd ${CATKIN_WS_SRC}
-    git clone https://github.com/Brazilian-Institute-of-Robotics/mpu6050_driver.git
+    git clone https://github.com/mzahana/mpu6050_driver.git
 else
     cd ${CATKIN_WS_SRC}/mpu6050_driver
     git pull origin master
@@ -361,6 +361,18 @@ fi
 #
 print_info "Copying launch files from $ROOT/launch/ to $HOME/launch/" && sleep 1
 cp $ROOT/launch/*.launch $HOME/launch
+
+#
+# Copy config files
+#
+if [ ! -d "${HOME}/config" ];then
+    print_info "Creating $HOME/config ..."
+    mkdir -p $HOME/config
+fi
+print_info "Copying config files from $ROOT/config/ to $HOME/config/ ..."
+cp -R $ROOT/config/rovio_config $HOME/config/
+cp -$ROOT/config/mpu_settings.yaml $HOME/config/
+cp $ROOT/config/vio_system_config.sh $HOME/config/
 
 #
 # Copy usefult scripts

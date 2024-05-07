@@ -1,8 +1,33 @@
 #!/bin/bash
 
-source /home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash
-source /home/vio/catkin_ws/devel/setup.bash
-source /home/vio/mavros_ws/devel/setup.bash
+if [ -f "/home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash" ]; then
+    source /home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash
+else
+    echo "ERROR: Could not find /home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash . EXIT"
+    exit 1
+fi
+
+if [ -f "/home/vio/catkin_ws/devel/setup.bash" ]; then
+    source /home/vio/catkin_ws/devel/setup.bash
+else
+    echo "ERROR: Could not find /home/vio/catkin_ws/devel/setup.bash . EXIT"
+    exit 1
+fi
+
+if [ -f "/home/vio/mavros_ws/devel/setup.bash" ]; then
+    source /home/vio/mavros_ws/devel/setup.bash
+else
+    echo "ERROR: Could not find /home/vio/mavros_ws/devel/setup.bash . EXIT"
+    exit 1
+fi
+
+
+if [ -f "/home/vio/config/vio_system_config.sh" ]; then
+    source /home/vio/config/vio_system_config.sh
+else
+    echo "ERROR: Could not find /home/vio/config/vio_system_config.sh . EXIT"
+    exit 1
+fi
 
 export ROS_MASTER_URI=http://localhost:11311
 export ROS_HOME=/home/vio/logs
@@ -26,6 +51,6 @@ set_ros_ip() {
 #set_ros_ip
 
 # Start the ROS nodes
-roslaunch /home/vio/launch/vio_system.launch fcu_url:=/dev/ttyAMA0:921600
+roslaunch /home/vio/launch/vio_system.launch
 
 #wait

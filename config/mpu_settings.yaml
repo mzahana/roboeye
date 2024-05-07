@@ -1,0 +1,23 @@
+# I2C Bus URI used to comunicate with I2C devices (default: "/dev/i2c-1")
+bus_uri: "/dev/i2c-1"
+
+# I2C address of MPU6050 (default: 0x68)
+mpu_address: 0x68
+
+# Frequency in Hertz wich IMU data is published (default: 30)
+pub_rate: 200
+
+# Frame if of IMU message (default: "imu")
+frame_id: "imu"
+
+# Offsets to fix wrong values caused by misalignment
+# Sequence is (ax, ay, az, gx, gy, gz) (default: [0, 0, 0, 0, 0, 0])
+axes_offsets: [-2587,  -1395, 1548, -12, -31, 34]
+
+# PID constants used in calibration procedure
+ki: 0.2 # (default: 0.1)
+kp: 0.1 # (default: 0.1)
+
+# The calibration process is finished when the error is aproximate zero with
+# the precision set by delta (default: 0.5)
+delta: 0.5

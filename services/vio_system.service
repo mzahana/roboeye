@@ -1,5 +1,5 @@
 [Unit]
-Description=Launches all the nodes of the VIO system
+Description=The Visual Inertial Odometry Service (libcamera_ros + mpu6050 + ROVIO)
 After=network.target
 Requires=network.target
 #Wants=network-online.target
