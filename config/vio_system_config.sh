@@ -61,5 +61,5 @@ export VIO_UNHEALTHY_FEATURE_DIST_COV=10
 export VIO_UNHEALTHY_VEL=6.0
 export VIO_WORLD_FRAME='odom'
 export VIO_MAP_FRAME='map'
-export VIO_IMU_FRAME='imu'
+export VIO_IMU_FRAME='base_link'
 export VIO_CAMERA_FRAME='camera'
