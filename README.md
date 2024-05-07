@@ -75,6 +75,7 @@ alias enable_vio_service='sudo systemctl enable vio_system.service'
 alias disable_vio_service='sudo systemctl disable vio_system.service'
 alias start_vio_service='sudo systemctl start vio_system.service'
 alias stop_vio_service='sudo systemctl stop vio_system.service'
+alias restart_vio_service='sudo systemctl restart vio_system.service'
 alias vio_service_status='sudo systemctl status vio_system.service'
 
 # Useful scripts
