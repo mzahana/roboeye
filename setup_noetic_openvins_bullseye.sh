@@ -371,7 +371,7 @@ if [ ! -d "${HOME}/config" ];then
 fi
 print_info "Copying config files from $ROOT/config/ to $HOME/config/ ..."
 cp -R $ROOT/config/rovio_config $HOME/config/
-cp -$ROOT/config/mpu_settings.yaml $HOME/config/
+cp $ROOT/config/mpu_settings.yaml $HOME/config/
 cp $ROOT/config/vio_system_config.sh $HOME/config/
 
 #
