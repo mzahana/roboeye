@@ -383,6 +383,7 @@ if [ ! -d "${HOME}/scripts" ];then
 fi
 cp $ROOT/scripts/print_pose.py $HOME/scripts/
 cp $ROOT/scripts/vio_watchdog.py $HOME/scripts/
+cp $ROOT/scripts/print_imu.py $HOME/scripts/
 
 #
 # DONE!

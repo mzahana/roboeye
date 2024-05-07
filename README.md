@@ -79,5 +79,6 @@ alias vio_service_status='sudo systemctl status vio_system.service'
 
 # Useful scripts
 alias print_pose='python /home/vio/scripts/print_pose.py'
+alias print_imu='python /home/vio/scripts/print_imu.py'
 alias reset_pose='rosservice call /rovio/reset "{}"'
 ```
