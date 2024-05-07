@@ -60,6 +60,10 @@
             <param name="healthy_feature_distance_cov_increment" value="$(optenv VIO_HEALTHY_FEATURE_DIST_COV_INCREMENT 0.3)"/>
             <param name="unhealthy_feature_distance_cov" value="$(optenv VIO_UNHEALTHY_FEATURE_DIST_COV 10)"/>
             <param name="unhealthy_velocity" value="$(optenv VIO_UNHEALTHY_VEL 6.0)"/>
+            <param name="world_frame" value="$(optenv VIO_WORLD_FRAME 'world')"/>
+            <param name="map_frame" value="$(optenv VIO_MAP_FRAME 'map')"/>
+            <param name="imu_frame" value="$(optenv VIO_IMU_FRAME 'imu')"/>
+            <param name="camera_frame" value="$(optenv VIO_CAMERA_FRAME 'camera')"/>
             <!--param name="camera1_config" value="$($ arg cam1_config)"/-->
             <remap from="imu0" to="$(optenv VIO_IMU_TOPIC '/imu/data_raw')" />
             <remap from="cam0/image_raw" to="$(optenv VIO_CAM0_TOPIC 'cam0/image_raw')" />
