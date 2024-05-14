@@ -255,7 +255,7 @@ if [ "$BUILD_OPENVINS" = true ]; then
     source ${ROS_WS}/install_isolated/setup.bash
     print_info "Building $CATKIN_WS ... " && sleep 1
     cd $CATKIN_WS
-    catkin build ov_msckf image_splitter_ros mpu6050_driver libcamera_ros
+    catkin build --cmake-args -DCMAKE_BUILD_TYPE=Release ov_msckf image_splitter_ros mpu6050_driver libcamera_ros
 else
     print_warning "SKipping building open_vins"
 fi
