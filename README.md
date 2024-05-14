@@ -82,4 +82,22 @@ alias vio_service_status='sudo systemctl status vio_system.service'
 alias print_pose='python /home/vio/scripts/print_pose.py'
 alias print_imu='python /home/vio/scripts/print_imu.py'
 alias reset_pose='rosservice call /rovio/reset "{}"'
+
+function calibrate_mpu6050 {
+    echo "Stopping vio service" && sleep 1
+    stop_vio_service
+    disable_vio_service
+    # Default YAML configuration file path
+    local default_yaml_path="$HOME/config/mpu_settings.yaml"
+    local yaml_path="${1:-$default_yaml_path}"  # Use the argument if provided, otherwise use the default
+
+    # Hardcoded path to the launch file
+    local launch_path="$HOME/launch/mpu6050_automated_calibration.launch"
+
+    # Inform the user which YAML configuration file is being loaded
+    echo "Launching with YAML configuration: $yaml_path"
+
+    # Launch the ROS node with the specified YAML configuration
+    roslaunch "$launch_path" yaml_file:="$yaml_path"
+}
 ```

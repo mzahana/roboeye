@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Arguments for configurable parameters -->
+    <arg name="yaml_file" default="/home/vio/config/mpu_settings.yaml"/>
+    <arg name="node_required" default="true"/>
+
+    <!-- MPU Calibration C++ Node -->
+    <node name="mpu_calibration_node" pkg="mpu6050_driver" type="mpu6050_calibration_node" output="screen">
+        <rosparam file="$(arg yaml_file)" command="load"/>
+    </node>
+
+    <!-- IMU Calibration Listener Python Node -->
+    <node name="imu_calibration_listener" pkg="mpu6050_driver" type="imu_calibration_listener.py" output="screen" required="$(arg node_required)">
+        <!-- Path to the MPU Settings YAML file -->
+        <param name="mpu_settings_path" value="$(arg yaml_file)"/>
+    </node>
+</launch>
