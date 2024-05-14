@@ -318,7 +318,7 @@ if [ "$BUILD_ROVIO" = true ]; then
     cd $CATKIN_WS
     catkin build rovio mpu6050_driver libcamera_ros image_splitter_ros -j 1 --mem-limit 50% --cmake-args -DCMAKE_BUILD_TYPE=Release -DMAKE_SCENE=OFF -DROVIO_NCAM=1 -DROVIO_PATCHSIZE=4 -DROVIO_NMAXFEATURE=15
 else
-    print_warning "SKipping building ROVIO"
+    print_warning "Skipping building ROVIO"
 fi
 
 
@@ -371,7 +371,12 @@ if [ ! -d "${HOME}/config" ];then
     mkdir -p $HOME/config
 fi
 print_info "Copying config files from $ROOT/config/ to $HOME/config/ ..."
-cp -R $ROOT/config/rovio_config $HOME/config/
+if [ "$BUILD_ROVIO" = true ]; then
+    cp -R $ROOT/config/rovio_config $HOME/config/
+fi
+if [ "$BUILD_OPENVINS" = true ]; then
+    cp -R $ROOT/config/openvins $HOME/config/
+fi
 cp $ROOT/config/mpu_settings.yaml $HOME/config/
 cp $ROOT/config/vio_system_config.sh $HOME/config/
 
@@ -385,6 +390,16 @@ fi
 cp $ROOT/scripts/print_pose.py $HOME/scripts/
 cp $ROOT/scripts/vio_watchdog.py $HOME/scripts/
 cp $ROOT/scripts/print_imu.py $HOME/scripts/
+
+#
+# Copy example calibration files
+#
+print_info "Copying calibration files from $ROOT/calibration_files  to  $HOME/calibration_files "
+if [ ! -d "${HOME}/calibration_files" ];then
+    print_info "Creating $HOME/calibration_files ..."
+    mkdir -p $HOME/calibration_files
+fi
+cp $ROOT/calibration_files/* $HOME/calibration_files/
 
 #
 # DONE!

@@ -1,0 +1,70 @@
+<launch>
+    <arg name="run_camera" default="$(optenv ENABLE_CAMERA false)"/>
+    <arg name="run_img_splitter" default="$(optenv ENABLE_IMAGE_SPLITTER false)"/>
+    <arg name="run_imu" default="$(optenv ENABLE_IMU false)"/>
+    <arg name="run_openvins" default="$(optenv ENABLE_OPENVINS false)"/>
+    <arg name="run_mavros" default="$(optenv ENABLE_MAVROS false)"/>
+
+    <!-- Include basic.launch from libcamera_ros package -->
+    <group if="$(eval run_camera == true)">
+        <include file="$(find libcamera_ros)/launch/basic.launch" >
+            <arg name="camera_name" value="$(optenv CAMERA_NAME '')"/>
+            <arg name="camera_id" value="$(optenv CAMERA_ID 0)"/>
+            <arg name="stream_role" value="$(optenv CAMERA_STREAM_ROLE 'still')"/>
+            <arg name="pixel_format" value="$(optenv CAMERA_PIXEL_FORMAT 'RGB888')"/>
+            <arg name="frame_id" value="$(optenv CAMERA_FRAME 'libcamera_frame')"/>
+            <arg name="resolution_width" value="$(optenv CAMERA_WIDTH 1280)"/>
+            <arg name="resolution_height" value="$(optenv CAMERA_HEIGHT 400)"/>
+
+            <!-- will it run using GNU debugger? -->
+            <arg name="DEBUG" default="false" />
+        </include>
+    </group>
+
+    <!-- Include stereo_image_split.launch from image_splitter_ros package -->
+    <group if="$(eval run_img_splitter == true)">
+        <include file="$(find image_splitter_ros)/launch/stereo_image_split.launch" >
+            <arg name="cam0_topic" value="$(optenv IMG_SPLIT_CAM0_TOPIC '/left_image')"/>
+            <arg name="cam1_topic" value="$(optenv IMG_SPLIT_CAM1_TOPIC '/right_image')"/>
+            <arg name="stereo_topic" value="$(optenv IMG_SPLIT_STEREO_TOPIC '/libcamera_ros/image_raw')"/>
+            <arg name="is_grey" default="$(optenv IMG_SPLIT_IS_GREY true)"/>
+        </include>
+    </group>
+
+    <!-- Include mpu6050_driver.launch from mpu6050_driver package -->
+    <group if="$(eval run_imu == true)">
+        <include file="$(find mpu6050_driver)/launch/mpu6050_driver.launch" >
+            <arg name="mpu_yaml" value="$(optenv MPU_YAML '')"/>
+        </include>
+    </group>
+
+    <!-- MAVROS -->
+    <group if="$(eval run_mavros == true)">
+        <include file="$(find mavros)/launch/px4.launch" >
+            <arg name="fcu_url" value="$(optenv MAVROS_FCU_URL '/dev/ttyAMA0:921600')"/>
+            <arg name="tgt_system" value="$(optenv MAVROS_TGT_SYSTEM 1)"/>
+            <arg name="gcs_url" value="$(optenv MAVROS_GCS_URL '')"/>
+        </include>
+    </group>
+
+    <!-- OpenVINS -->
+    <group if="$(eval run_openvins == true)">
+        <node name="ov_msckf" pkg="ov_msckf" type="run_subscribe_msckf" output="screen" clear_params="true" required="true">
+
+            <!-- master configuration object -->
+            <param name="verbosity"              type="string" value="$(optenv OPENVINS_VERBOSITY 'SILENT'" />
+            <param name="config_path"            type="string" value="$(optenv OPENVINS_CONFIG_PATH '/home/vio/config/openvins/estimator_config.yaml')" />
+
+            <!-- world/filter parameters -->
+            <param name="use_stereo"             type="bool"   value="$(optenv OPENVINS_USESTEREO false" />
+            <param name="max_cameras"            type="int"    value="$$(optenv OPENVINS_NCAM 1)" />
+
+            <!-- timing statistics recording -->
+            <param name="record_timing_information"   type="bool"   value="$(arg dotime)" />
+            <param name="record_timing_filepath"      type="string" value="$(arg path_time)" />
+            <remap from="odomimu" to="$(optenv OPENVINS_ODOM_TOPIC '/mavros/odometry/out')" />
+
+        </node>
+    </group>
+
+</launch>
