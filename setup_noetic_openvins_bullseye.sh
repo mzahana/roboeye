@@ -373,12 +373,13 @@ fi
 print_info "Copying config files from $ROOT/config/ to $HOME/config/ ..."
 if [ "$BUILD_ROVIO" = true ]; then
     cp -R $ROOT/config/rovio_config $HOME/config/
+    cp $ROOT/config/vio_system_config.sh $HOME/config/
 fi
 if [ "$BUILD_OPENVINS" = true ]; then
     cp -R $ROOT/config/openvins $HOME/config/
+    cp $ROOT/config/openvins_system_config.sh $HOME/config/
 fi
 cp $ROOT/config/mpu_settings.yaml $HOME/config/
-cp $ROOT/config/vio_system_config.sh $HOME/config/
 
 #
 # Copy usefult scripts
