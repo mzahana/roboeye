@@ -50,3 +50,5 @@ export OPENVINS_NCAM=1
 export OPENVINS_VERBOSITY='SILENT'
 export OPENVINS_USESTEREO=false
 export OPENVINS_ODOM_TOPIC='/mavros/odometry/out'
+export OPENVINS_RECORD_TIME_INFO=false
+export OPENVINS_TIME_PATH='/home/vio/logs'
