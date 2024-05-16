@@ -54,7 +54,7 @@
         <node name="ov_msckf" pkg="ov_msckf" type="run_subscribe_msckf" output="screen" clear_params="true" required="true">
 
             <!-- master configuration object -->
-            <param name="verbosity"              type="string" value="$(optenv OPENVINS_VERBOSITY 'SILENT'" />
+            <param name="verbosity"              type="string" value="$(optenv OPENVINS_VERBOSITY 'SILENT')" />
             <param name="config_path"            type="string" value="$(optenv OPENVINS_CONFIG_PATH '/home/vio/config/openvins/estimator_config.yaml')" />
 
             <!-- world/filter parameters -->
