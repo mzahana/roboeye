@@ -7,7 +7,7 @@ export ENABLE_CAMERA=true
 export ENABLE_IMU=true
 #  You need it if your stereo camera publishes stitched iamges into a single topic
 export ENABLE_IMAGE_SPLITTER=true
-export ENABLE_ROVIO=true
+export ENABLE_OPENVINS=true
 export ENABLE_MAVROS=true
 
 #
