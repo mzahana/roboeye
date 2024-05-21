@@ -48,20 +48,24 @@
     </group>
 
     <!-- OpenVINS -->
+    <arg name="use_stereo_arg" default="$(optenv OPENVINS_USESTEREO false)"/>
+    <arg name="record_time_info_arg" default="$(optenv OPENVINS_RECORD_TIME_INFO false)"/>
     <group if="$(eval run_openvins == true)">
         <node name="ov_msckf" pkg="ov_msckf" type="run_subscribe_msckf" output="screen" clear_params="true" required="true">
 
             <!-- master configuration object -->
-            <param name="verbosity"              type="string" value="$(optenv OPENVINS_VERBOSITY 'SILENT'" />
+            <param name="verbosity"              type="string" value="$(optenv OPENVINS_VERBOSITY 'SILENT')" />
             <param name="config_path"            type="string" value="$(optenv OPENVINS_CONFIG_PATH '/home/vio/config/openvins/estimator_config.yaml')" />
 
             <!-- world/filter parameters -->
-            <param name="use_stereo"             type="bool"   value="$(optenv OPENVINS_USESTEREO false" />
-            <param name="max_cameras"            type="int"    value="$$(optenv OPENVINS_NCAM 1)" />
+            <param unless="$(arg use_stereo_arg)" name="use_stereo" type="bool" value="false"/>
+            <param if="$(arg use_stereo_arg)" name="use_stereo" type="bool" value="true"/>
+            <param name="max_cameras"            type="int"    value="$(optenv OPENVINS_NCAM 1)" />
 
             <!-- timing statistics recording -->
-            <param name="record_timing_information"   type="bool"   value="$(arg dotime)" />
-            <param name="record_timing_filepath"      type="string" value="$(arg path_time)" />
+            <param unless="$(arg record_time_info_arg)" name="record_timing_information" type="bool" value="false"/>
+            <param if="$(arg record_time_info_arg)" name="record_timing_information" type="bool" value="true"/>
+            <param name="record_timing_filepath"      type="string" value="$(optenv OPENVINS_TIME_PATH '/home/vio/logs')" />
             <remap from="odomimu" to="$(optenv OPENVINS_ODOM_TOPIC '/mavros/odometry/out')" />
 
         </node>

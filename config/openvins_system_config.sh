@@ -7,7 +7,7 @@ export ENABLE_CAMERA=true
 export ENABLE_IMU=true
 #  You need it if your stereo camera publishes stitched iamges into a single topic
 export ENABLE_IMAGE_SPLITTER=true
-export ENABLE_ROVIO=true
+export ENABLE_OPENVINS=true
 export ENABLE_MAVROS=true
 
 #
@@ -50,3 +50,5 @@ export OPENVINS_NCAM=1
 export OPENVINS_VERBOSITY='SILENT'
 export OPENVINS_USESTEREO=false
 export OPENVINS_ODOM_TOPIC='/mavros/odometry/out'
+export OPENVINS_RECORD_TIME_INFO=false
+export OPENVINS_TIME_PATH='/home/vio/logs'
