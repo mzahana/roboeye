@@ -31,9 +31,9 @@
         </include>
     </group>
 
-    <!-- Include mpu6050_driver.launch from mpu6050_driver package -->
+    <!-- Include mpu6050_driver2.launch from mpu6050_driver package -->
     <group if="$(eval run_imu == true)">
-        <include file="$(find mpu6050_driver)/launch/mpu6050_driver.launch" >
+        <include file="$(find mpu6050_driver)/launch/mpu6050_driver2.launch" >
             <arg name="mpu_yaml" value="$(optenv MPU_YAML '')"/>
         </include>
     </group>

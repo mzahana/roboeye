@@ -1,5 +1,5 @@
 # I2C Bus URI used to comunicate with I2C devices (default: "/dev/i2c-1")
-bus_uri: "/dev/i2c-1"
+bus_uri: /dev/i2c-1
 
 # I2C address of MPU6050 (default: 0x68)
 mpu_address: 0x68
@@ -8,16 +8,34 @@ mpu_address: 0x68
 pub_rate: 200
 
 # Frame if of IMU message (default: "imu")
-frame_id: "imu"
+frame_id: imu
 
 # Offsets to fix wrong values caused by misalignment
 # Sequence is (ax, ay, az, gx, gy, gz) (default: [0, 0, 0, 0, 0, 0])
-axes_offsets: [-2497,  -1341, 1545, -7, -29, 58]
+# NOTE: This is used by mpu6050_node.cpp and NOT with mpu6050_node2.cpp
+axes_offsets: [0, 0, 0, 0, 0, 0]
 
 # PID constants used in calibration procedure
-ki: 0.2 # (default: 0.1)
-kp: 0.1 # (default: 0.1)
+# NOTE: This is used by mpu6050_calibration_node.cpp and NOT with mpu6050_calibration_node2.cpp
+ki: 0.20000000000000001
+kp: 0.10000000000000001
+delta: 0.20000000000000001
 
-# The calibration process is finished when the error is aproximate zero with
-# the precision set by delta (default: 0.5)
-delta: 0.5
+# Least square based calibration parameters
+# NOTE: This is produced by mpu6050_calibration_node2.cpp and NOT by mpu6050_calibration_node.cpp
+# NOTE: This is used by mpu6050_node2.cpp and NOT with mpu6050_node.cpp
+Xgain: 0.99591491699218748
+YtoX: -0.0031604003906250001
+ZtoX: 0.081433105468750003
+Xofs: -0.00078877766927083336
+XtoY: -0.0031121826171875001
+Ygain: 0.99959594726562506
+ZtoY: 0.0064855957031250003
+Yofs: -0.0081247965494791671
+XtoZ: -0.098767089843750003
+YtoZ: -0.032595825195312497
+Zgain: 1.0119696044921875
+Zofs: -0.00021769205729166668
+gyro_x_offset: -2.460000010728836
+gyro_y_offset: 8.7046183967590327
+gyro_z_offset: 1.5921755743026733
