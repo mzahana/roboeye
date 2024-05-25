@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <arg name="run_camera" default="$(optenv ENABLE_CAMERA false)"/>
+    <arg name="run_img_splitter" default="$(optenv ENABLE_IMAGE_SPLITTER false)"/>
+    <arg name="run_imu" default="$(optenv ENABLE_IMU false)"/>
+    <arg name="run_rovio" default="$(optenv ENABLE_ROVIO false)"/>
+    <arg name="run_mavros" default="$(optenv ENABLE_MAVROS false)"/>
+
+    <!-- Include basic.launch from libcamera_ros package -->
+    <group if="$(eval run_camera == true)">
+        <include file="$(find libcamera_ros)/launch/basic.launch" >
+            <arg name="camera_name" value="$(optenv CAMERA_NAME '')"/>
+            <arg name="camera_id" value="$(optenv CAMERA_ID 0)"/>
+            <arg name="stream_role" value="$(optenv CAMERA_STREAM_ROLE 'still')"/>
+            <arg name="pixel_format" value="$(optenv CAMERA_PIXEL_FORMAT 'RGB888')"/>
+            <arg name="frame_id" value="$(optenv CAMERA_FRAME 'libcamera_frame')"/>
+            <arg name="resolution_width" value="$(optenv CAMERA_WIDTH 1280)"/>
+            <arg name="resolution_height" value="$(optenv CAMERA_HEIGHT 400)"/>
+
+            <!-- will it run using GNU debugger? -->
+            <arg name="DEBUG" default="false" />
+        </include>
+    </group>
+
+    <!-- Include rgb2mono_node from image_splitter_ros package -->
+    <group if="$(eval run_img_splitter == true)">
+        <node name="rgb2mono_node" pkg="image_splitter_ros" type="rgb2mono_node" output="screen">
+            <!-- Remap the input image topic -->
+            <remap from="/camera/image_raw" to="$(optenv IMG_SPLIT_STEREO_TOPIC 'cam0/image_raw')" />
+            <!-- Remap the output image topic -->
+            <remap from="/image_mono" to="$(optenv IMG_SPLIT_CAM0_TOPIC 'cam0/image_raw')" />
+        </node>
+    </group>
+
+    <!-- Include mpu6050_driver2.launch from mpu6050_driver package -->
+    <group if="$(eval run_imu == true)">
+        <include file="$(find mpu6050_driver)/launch/mpu6050_driver2.launch" >
+            <arg name="mpu_yaml" value="$(optenv MPU_YAML '')"/>
+        </include>
+    </group>
+
+    <!-- MAVROS -->
+    <group if="$(eval run_mavros == true)">
+        <include file="$(find mavros)/launch/px4.launch" >
+            <arg name="fcu_url" value="$(optenv MAVROS_FCU_URL '/dev/ttyAMA0:921600')"/>
+            <arg name="tgt_system" value="$(optenv MAVROS_TGT_SYSTEM 1)"/>
+            <arg name="gcs_url" value="$(optenv MAVROS_GCS_URL '')"/>
+        </include>
+    </group>
+
+    <!-- ROVIO -->
+    <group if="$(eval run_rovio == true)">
+        <node pkg="rovio" type="rovio_node" name="rovio" output="screen">
+            <param name="filter_config" value="$(optenv VIO_CONFIG_FILE '/home/vio/rovio_config/rovio_rpi.info')"/>
+            <param name="camera0_config" value="$(optenv VIO_CAM0_CONFIG_FILE '/home/vio/rovio_config/arducam_cam0.yaml')"/>
+            <param name="camera1_config" value="$(optenv VIO_CAM1_CONFIG_FILE '/home/vio/rovio_config/arducam_cam1.yaml')"/>
+            <param name="health_monitor_enabled" value="$(optenv VIO_HEALTH_MONITOR true)"/>
+            <param name="velocity_to_consider_static" value="$(optenv VIO_VEL_TO_CONSIDER_STATIC 0.1)"/>
+            <param name="max_subsequent_unhealthy_updates" value="$(optenv VIO_MAX_SUBSEQUENT_UNHEALTHY_UPDATES 2)"/>
+            <param name="healthy_feature_distance_cov" value="$(optenv VIO_HEALTHY_FEATURE_DIST_COV 0.5)"/>
+            <param name="healthy_feature_distance_cov_increment" value="$(optenv VIO_HEALTHY_FEATURE_DIST_COV_INCREMENT 0.3)"/>
+            <param name="unhealthy_feature_distance_cov" value="$(optenv VIO_UNHEALTHY_FEATURE_DIST_COV 10)"/>
+            <param name="unhealthy_velocity" value="$(optenv VIO_UNHEALTHY_VEL 6.0)"/>
+            <param name="world_frame" value="$(optenv VIO_WORLD_FRAME 'world')"/>
+            <param name="map_frame" value="$(optenv VIO_MAP_FRAME 'map')"/>
+            <param name="imu_frame" value="$(optenv VIO_IMU_FRAME 'imu')"/>
+            <param name="camera_frame" value="$(optenv VIO_CAMERA_FRAME 'camera')"/>
+            <!--param name="camera1_config" value="$($ arg cam1_config)"/-->
+            <remap from="imu0" to="$(optenv VIO_IMU_TOPIC '/imu/data_raw')" />
+            <remap from="cam0/image_raw" to="$(optenv VIO_CAM0_TOPIC 'cam0/image_raw')" />
+            <remap from="cam1/image_raw" to="$(optenv VIO_CAM0_TOPIC 'cam1/image_raw')" />
+            <remap from="/rovio/odometry" to="$(optenv VIO_ODOM_OUT_TOPIC '/rovio/odometry')" />
+        </node>
+    </group>
+
+</launch>

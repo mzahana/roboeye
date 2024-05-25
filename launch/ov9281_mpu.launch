@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- Include mpu6050_driver.launch from mpu6050_driver package -->
+    <include file="$(find mpu6050_driver)/launch/mpu6050_driver2.launch" />
+
+    <!-- Include basic.launch from libcamera_ros package -->
+    <include file="$(find libcamera_ros)/launch/basic.launch" >
+       <arg name="resolution_width" value="1280"/>
+       <arg name="resolution_height" value="800"/>
+    </include>
+
+    <!-- Launch the rgb2mono_node with topic remapping -->
+    <node name="rgb2mono_node" pkg="image_splitter_ros" type="rgb2mono_node" output="screen">
+        <!-- Remap the input image topic -->
+        <remap from="/camera/image_raw" to="/libcamera_ros/image_raw" />
+        <!-- Remap the output image topic -->
+        <remap from="/image_mono" to="/image_mono" />
+    </node>
+</launch>

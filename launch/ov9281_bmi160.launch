@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <arg name="bmi160_params" default="$(find bmi160_ros)/config/bmi160_params.yaml"/>
+  <arg name="bmi160_calibration" default="$(find bmi160_ros)/config/bmi160_calibration.yaml"/>
+  <node name="bmi160_publisher" pkg="bmi160_ros" type="bmi160_publisher" output="screen">
+    <rosparam file="$(arg bmi160_params)" command="load"/>
+    <rosparam file="$(arg bmi160_calibration)" command="load"/>
+  </node>
+
+    <!-- Include basic.launch from libcamera_ros package -->
+    <include file="$(find libcamera_ros)/launch/basic.launch" >
+       <arg name="resolution_width" value="640"/>
+       <arg name="resolution_height" value="400"/>
+    </include>
+
+    <!-- Launch the rgb2mono_node with topic remapping -->
+    <node name="rgb2mono_node" pkg="image_splitter_ros" type="rgb2mono_node" output="screen">
+        <!-- Remap the input image topic -->
+        <remap from="/camera/image_raw" to="/libcamera_ros/image_raw" />
+        <!-- Remap the output image topic -->
+        <remap from="/image_mono" to="/image_mono" />
+    </node>
+</launch>
