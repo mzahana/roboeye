@@ -45,6 +45,18 @@
             <arg name="tgt_system" value="$(optenv MAVROS_TGT_SYSTEM 1)"/>
             <arg name="gcs_url" value="$(optenv MAVROS_GCS_URL '')"/>
         </include>
+
+        <!-- Publish static transform from 'global' frame to 'odom' frame -->
+        <node name="static_tf_pub_global_to_odom"
+            pkg="tf"
+            type="static_transform_publisher"
+            args="0 0 0 0 0 0 global odom 5" />
+
+        <!-- Publish static transform from 'imu' frame to 'base_link' frame -->
+        <node name="static_tf_pub_imu_to_base_link"
+            pkg="tf"
+            type="static_transform_publisher"
+            args="0 0 0 0 0 0 imu base_link 5" />
     </group>
 
     <!-- OpenVINS -->
