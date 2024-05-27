@@ -1,0 +1,48 @@
+%YAML:1.0 # need to specify the file type at the top!
+
+cam:
+  enabled: true
+  max_n: 1
+  use_stereo: false
+  stereo_pair: [0, 1]
+  do_calib_ext: true
+  do_calib_int: true
+  do_calib_dt: true
+  n_pts: 300
+  fast: 20
+  grid_x: 20
+  grid_y: 20
+  min_px_dist: 15
+  knn: 0.70
+  downsample: false
+  histogram_method: "HISTOGRAM" # NONE, HISTOGRAM, CLAHE
+  max_slam: 20
+  max_msckf: 50
+  feat_rep: "GLOBAL_3D"
+  init_cov_dt: 1e-4
+  init_cov_ex_o: 1e-4
+  init_cov_ex_p: 1e-4
+  init_cov_in_k: 1e-1
+  init_cov_in_c: 1e-1
+  init_cov_in_r: 1e-5
+  sigma_px: 1
+  chi2_mult: 1
+
+  # ==================================================================
+  # ==================================================================
+
+cam0:
+  T_cam_imu:
+    - [-0.9996617094010058, -0.004551507782658249, 0.02560762648826433, 0.01786410192232065]
+    - [-0.025747121621691814, 0.03381900230361395, -0.9990962720435831, 0.003436066861236747]
+    - [0.0036813700786345153, -0.9994176098408972, -0.03392474987750944, -0.04162736553938879]
+    - [0.0, 0.0, 0.0, 1.0]
+  cam_overlaps: []
+  camera_model: pinhole
+  distortion_coeffs: [-0.0450175136695501, 0.025398551929709395, -0.023683222547249957, 0.006057119590900955]
+  distortion_model: equidistant
+  intrinsics: [291.6710689858397, 290.86295884186796, 318.0480461953943, 203.57759683186387]
+  resolution: [640, 400]
+  topic: /image_mono
+  timeshift_cam_imu: -0.005800751399880711
+  timeoffset: -0.005800751399880711

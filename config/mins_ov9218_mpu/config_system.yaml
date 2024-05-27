@@ -1,0 +1,16 @@
+%YAML:1.0 # need to specify the file type at the top!
+
+sys:
+  verbosity: 3
+  save_timing: false
+  path_timing: "/vio/home/logs/MINS/mins.time"
+  save_state: false
+  path_state: "/vio/home/logs/MINS/path_state/"
+  save_trajectory: false
+  path_trajectory: "/vio/home/logs/MINS/path.txt"
+  save_prints: false
+  exp_id: 0
+
+  path_bag: "/home/wsl/Downloads/V1_01_easy.bag"
+  bag_start: 0
+  bag_durr: -1
