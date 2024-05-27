@@ -487,6 +487,10 @@
     uri: https://github.com/ros-gbp/vision_opencv-release/archive/release/noetic/cv_bridge/1.16.2-1.tar.gz
     version: vision_opencv-release-release-noetic-cv_bridge-1.16.2-1
 - tar:
+    local-name: vision_opencv/cv_bridge
+    uri: https://github.com/ros-gbp/vision_opencv-release/archive/release/noetic/image_geometry/1.16.2-1.tar.gz
+    version: vision_opencv-release-release-noetic-image_geometry-1.16.2-1
+- tar:
     local-name: xacro
     uri: https://github.com/ros-gbp/xacro-release/archive/release/noetic/xacro/1.14.18-1.tar.gz
     version: xacro-release-release-noetic-xacro-1.14.18-1
