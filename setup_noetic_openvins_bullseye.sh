@@ -212,7 +212,7 @@ if [ "$BUILD_ROS" = true ]; then
     cd $ROS_WS/src && git clone -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
     cd $ROS_WS/src && git clone -b melodic-devel https://github.com/ros-perception/perception_pcl.git
 
-    cd $ROS_WS && ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3
+    cd $ROS_WS && ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 -j2
 else
     print_warning "Skipping building ROS"
 fi
