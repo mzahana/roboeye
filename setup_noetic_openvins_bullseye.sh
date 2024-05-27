@@ -188,6 +188,7 @@ if [ "$BUILD_ROS" = true ]; then
                             python3-pycryptodome \
                             graphviz \
                             tmux \
+                            libpcl-dev \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
 
@@ -207,7 +208,11 @@ if [ "$BUILD_ROS" = true ]; then
 
     rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
 
-    ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3
+    # clone PCL packages
+    cd $ROS_WS/src && git clone -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
+    cd $ROS_WS/src && git clone -b melodic-devel https://github.com/ros-perception/perception_pcl.git
+
+    cd $ROS_WS && ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3
 else
     print_warning "Skipping building ROS"
 fi
