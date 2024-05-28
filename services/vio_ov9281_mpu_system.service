@@ -1,5 +1,5 @@
 [Unit]
-Description=The Visual Inertial Odometry Service (libcamera_ros[ov9218] + mpu6050 + ROVIO)
+Description=The Visual Inertial Odometry Service (libcamera_ros[ov9281] + mpu6050 + ROVIO)
 After=network.target
 Requires=network.target
 #Wants=network-online.target
@@ -7,7 +7,7 @@ Requires=network.target
 [Service]
 Type=simple
 User=vio
-ExecStart=/bin/bash /home/vio/services/vio_ov9218_mpu_system.sh
+ExecStart=/bin/bash /home/vio/services/vio_ov9281_mpu_system.sh
 StandardOutput=append:/home/vio/logs/vio_system_service.log
 StandardError=append:/home/vio/logs/vio_system_service.log
 Restart=always

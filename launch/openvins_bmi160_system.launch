@@ -21,21 +21,24 @@
         </include>
     </group>
 
-    <!-- Include stereo_image_split.launch from image_splitter_ros package -->
+     <!-- Include rgb2mono_node from image_splitter_ros package -->
     <group if="$(eval run_img_splitter == true)">
-        <include file="$(find image_splitter_ros)/launch/stereo_image_split.launch" >
-            <arg name="cam0_topic" value="$(optenv IMG_SPLIT_CAM0_TOPIC '/left_image')"/>
-            <arg name="cam1_topic" value="$(optenv IMG_SPLIT_CAM1_TOPIC '/right_image')"/>
-            <arg name="stereo_topic" value="$(optenv IMG_SPLIT_STEREO_TOPIC '/libcamera_ros/image_raw')"/>
-            <arg name="is_grey" default="$(optenv IMG_SPLIT_IS_GREY true)"/>
-        </include>
+        <node name="rgb2mono_node" pkg="image_splitter_ros" type="rgb2mono_node" output="screen">
+            <!-- Remap the input image topic -->
+            <remap from="/camera/image_raw" to="$(optenv IMG_SPLIT_STEREO_TOPIC 'cam0/image_raw')" />
+            <!-- Remap the output image topic -->
+            <remap from="/image_mono" to="$(optenv IMG_SPLIT_CAM0_TOPIC 'cam0/image_raw')" />
+        </node>
     </group>
 
-    <!-- Include mpu6050_driver.launch from mpu6050_driver package -->
+    <!-- Run BMI160 IMU driver -->
+    <arg name="bmi160_params" default="$(find bmi160_ros)/config/bmi160_params.yaml"/>
+    <arg name="bmi160_calibration" default="$(find bmi160_ros)/config/bmi160_calibration.yaml"/>
     <group if="$(eval run_imu == true)">
-        <include file="$(find mpu6050_driver)/launch/mpu6050_driver2.launch" >
-            <arg name="mpu_yaml" value="$(optenv MPU_YAML '')"/>
-        </include>
+        <node name="bmi160_publisher" pkg="bmi160_ros" type="bmi160_publisher" output="screen">
+            <rosparam file="$(arg bmi160_params)" command="load"/>
+            <rosparam file="$(arg bmi160_calibration)" command="load"/>
+        </node>
     </group>
 
     <!-- MAVROS -->

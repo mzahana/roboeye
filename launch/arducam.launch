@@ -1,0 +1,8 @@
+<launch>
+    <!-- Include basic.launch from libcamera_ros package -->
+    <include file="$(find libcamera_ros)/launch/basic.launch" />
+
+    <!-- Include stereo_image_split.launch from image_splitter_ros package -->
+    <include file="$(find image_splitter_ros)/launch/stereo_image_split.launch" />
+    
+</launch>

@@ -1,5 +1,5 @@
 [Unit]
-Description=Multi-sensor Inertial Odometry (MINS) Service (libcamera_ros + mpu6050 + MINS)
+Description=Multi-sensor Inertial Odometry (MINS) Service (libcamera_ros[ov9281] + mpu6050 + MINS)
 After=network.target
 Requires=network.target
 #Wants=network-online.target
@@ -7,7 +7,7 @@ Requires=network.target
 [Service]
 Type=simple
 User=vio
-ExecStart=/bin/bash /home/vio/services/mins_ov9218_mpu_system.sh
+ExecStart=/bin/bash /home/vio/services/mins_ov9281_mpu_system.sh
 StandardOutput=append:/home/vio/logs/mins_system_service.log
 StandardError=append:/home/vio/logs/mins_system_service.log
 Restart=always

@@ -22,10 +22,10 @@ else
 fi
 
 
-if [ -f "/home/vio/config/openvins_system_config.sh" ]; then
-    source /home/vio/config/openvins_system_config.sh
+if [ -f "/home/vio/config/vio_system_bmi160_config.sh" ]; then
+    source /home/vio/config/vio_system_bmi160_config.sh
 else
-    echo "ERROR: Could not find /home/vio/config/openvins_system_config.sh . EXIT"
+    echo "ERROR: Could not find /home/vio/config/vio_system_config.sh . EXIT"
     exit 1
 fi
 
@@ -48,9 +48,9 @@ set_ros_ip() {
 
 # This is not needed if you are running the system completely locally
 # and transferring data, e.g., serially.
-set_ros_ip
+#set_ros_ip
 
 # Start the ROS nodes
-roslaunch /home/vio/launch/openvins_system.launch
+roslaunch /home/vio/launch/vio_system_ov9218.launch
 
 #wait

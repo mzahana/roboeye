@@ -22,10 +22,10 @@ else
 fi
 
 
-if [ -f "/home/vio/config/openvins_ov9218_mpu_system_config.sh" ]; then
-    source /home/vio/config/openvins_ov9218_mpu_system_config.sh
+if [ -f "/home/vio/config/openvins_bmi160_system_config.sh" ]; then
+    source /home/vio/config/openvins_bmi160_system_config.sh
 else
-    echo "ERROR: Could not find /home/vio/config/openvins_ov9218_mpu_system_config.sh . EXIT"
+    echo "ERROR: Could not find /home/vio/config/openvins_bmi160_system_config.sh . EXIT"
     exit 1
 fi
 
@@ -51,6 +51,6 @@ set_ros_ip() {
 set_ros_ip
 
 # Start the ROS nodes
-roslaunch /home/vio/launch/openvins_ov9218_mpu_system.launch
+roslaunch /home/vio/launch/openvins_bmi160_system.launch
 
 #wait

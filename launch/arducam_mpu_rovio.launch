@@ -1,0 +1,31 @@
+<launch>
+    <!-- Include basic.launch from libcamera_ros package -->
+    <include file="$(find libcamera_ros)/launch/basic.launch" />
+
+    <!-- Include mpu6050_driver.launch from mpu6050_driver package -->
+    <include file="$(find mpu6050_driver)/launch/mpu6050_driver.launch" />
+
+    <!-- Include stereo_image_split.launch from image_splitter_ros package -->
+    <include file="$(find image_splitter_ros)/launch/stereo_image_split.launch" />
+
+     <arg name="filter_config" default="/home/vio/rovio_config/rovio_rpi.info"/>
+     <arg name="cam0_config" default="/home/vio/rovio_config/arducam_cam0.yaml"/>
+     <arg name="cam1_config" default="/home/vio/rovio_config/arducam_cam1.yaml"/>
+     <node pkg="rovio" type="rovio_node" name="rovio" output="screen">
+        <param name="filter_config" value="$(arg filter_config)"/>
+        <param name="camera0_config" value="$(arg cam0_config)"/>
+        <param name="health_monitor_enabled" value="true"/>
+        <param name="velocity_to_consider_static" value="0.1"/>
+        <param name="max_subsequent_unhealthy_updates" value="2"/>
+        <param name="healthy_feature_distance_cov" value="0.5"/>
+        <param name="healthy_feature_distance_cov_increment" value="0.3"/>
+        <param name="unhealthy_feature_distance_cov" value="10"/>
+        <param name="unhealthy_velocity" value="6.0"/>
+        <!--param name="camera1_config" value="$($ arg cam1_config)"/-->
+        <remap from="imu0" to="/imu/data_raw" />
+        <remap from="cam0/image_raw" to="/left_image" />
+        <remap from="cam1/image_raw" to="/right_image" />
+        <remap from="/rovio/odometry" to="/mavros/odometry/out" />
+     </node>
+
+</launch>

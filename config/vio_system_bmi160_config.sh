@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #
-# Flags:
+# Flags: 
 #
 export ENABLE_CAMERA=true
 export ENABLE_IMU=true
 #  You need it if your stereo camera publishes stitched iamges into a single topic
 export ENABLE_IMAGE_SPLITTER=true
-export ENABLE_MINS=true
+export ENABLE_ROVIO=true
 export ENABLE_MAVROS=true
 
 #
@@ -43,7 +43,23 @@ export MAVROS_TGT_SYSTEM=1
 export MAVROS_GCS_URL=''
 
 #
-# MINS
+# rovio
 #
-export MINS_CONFIG_PATH='/home/vio/config/mins_ov9218_mpu/config.yaml'
-export MINS_ODOM_TOPIC='/mavros/odometry/out'
+export VIO_CONFIG_FILE='/home/vio/config/rovio_config3/rovio_rpi.info'
+export VIO_CAM0_CONFIG_FILE='/home/vio/config/rovio_config3/ov9218.yaml'
+#export VIO_CAM1_CONFIG_FILE='/home/vio/config/rovio_config2/arducam_cam1.yaml'
+export VIO_IMU_TOPIC='/imu/data_raw'
+export VIO_CAM0_TOPIC='/image_mono'
+export VIO_CAM1_TOPIC='/right_image'
+export VIO_ODOM_OUT_TOPIC='/mavros/odometry/out'
+export VIO_HEALTH_MONITOR=true
+export VIO_VEL_TO_CONSIDER_STATIC=0.1
+export VIO_MAX_SUBSEQUENT_UNHEALTHY_UPDATES=2
+export VIO_HEALTHY_FEATURE_DIST_COV=0.5
+export VIO_HEALTHY_FEATURE_DIST_COV_INCREMENT=0.3
+export VIO_UNHEALTHY_FEATURE_DIST_COV=10
+export VIO_UNHEALTHY_VEL=6.0
+export VIO_WORLD_FRAME='odom'
+export VIO_MAP_FRAME='map'
+export VIO_IMU_FRAME='base_link'
+export VIO_CAMERA_FRAME='camera'

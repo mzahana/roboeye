@@ -21,18 +21,11 @@ else
     exit 1
 fi
 
-if [ -f "/home/vio/mins_ws/devel/setup.bash" ]; then
-    source /home/vio/mins_ws/devel/setup.bash
-else
-    echo "ERROR: Could not find /home/vio/mins_ws/devel/setup.bash . EXIT"
-    exit 1
-fi
 
-
-if [ -f "/home/vio/config/mins_ov9218_mpu_system_config.sh" ]; then
-    source /home/vio/config/mins_ov9218_mpu_system_config.sh
+if [ -f "/home/vio/config/vio_system_ov9281_mpu_config.sh" ]; then
+    source /home/vio/config/vio_system_ov9281_mpu_config.sh
 else
-    echo "ERROR: Could not find /home/vio/config/mins_ov9218_mpu_system_config.sh . EXIT"
+    echo "ERROR: Could not find /home/vio/config/vio_system_ov9281_mpu_config.sh . EXIT"
     exit 1
 fi
 
@@ -58,6 +51,6 @@ set_ros_ip() {
 #set_ros_ip
 
 # Start the ROS nodes
-roslaunch /home/vio/launch/mins_ov9218_mpu_system.launch
+roslaunch /home/vio/launch/vio_system_ov9281_mpu.launch
 
 #wait
