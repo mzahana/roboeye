@@ -1,3 +1,31 @@
+"""
+Converts Kalibr calibration outputs to VINS-Mono configuration files.
+
+This script takes calibration data from Kalibr (camera and IMU) and generates a YAML configuration file suitable for VINS-Mono. It supports handling different distortion models, specifically 'radtan' (radial-tangential) and 'equidistant'. Based on the distortion model specified in the Kalibr output, appropriate parameters are set for the VINS-Mono configuration.
+
+Usage:
+    python convert_kalibr_to_vins.py <camera_yaml> <imu_yaml> [--output <output_path>]
+
+Arguments:
+    camera_yaml    Path to the Kalibr camera calibration YAML file.
+    imu_yaml       Path to the Kalibr IMU calibration YAML file.
+    --output       Optional. Specifies the path to save the generated VINS-Mono configuration file.
+                   If not provided, the configuration file is saved in the same directory as the camera YAML file.
+
+Example:
+    python convert_kalibr_to_vins.py cam_calib.yaml imu_calib.yaml --output vins_config.yaml
+
+The script outputs a YAML file with the following main sections:
+    - Common parameters: IMU topic, image topic, output path
+    - Camera calibration: model type, camera name, image dimensions, distortion and projection parameters
+    - Extrinsic parameters: rotation and translation from the camera frame to the IMU frame
+    - Feature tracker parameters: settings related to feature tracking for VINS-Mono
+    - Optimization parameters: solver settings for real-time performance
+    - IMU parameters: noise densities and random walk parameters
+    - Loop closure parameters: settings related to loop closure in VINS-Mono
+    - Visualization parameters: settings for visual outputs and debugging
+"""
+
 import argparse
 import yaml
 import numpy as np
@@ -23,12 +51,10 @@ def opencv_matrix(matrix):
     }
 
 def represent_opencv_matrix(dumper, matrix):
-    """ Ensure matrices are represented as a single-line array. """
     return dumper.represent_mapping('tag:yaml.org,2002:map', matrix)
 
 def represent_dict_order(dumper, data):
-    """ Enforce multiline dictionary representation for simpler dictionaries. """
-    if all(key in data for key in ['rows', 'cols', 'dt', 'data']):  # Check for matrix pattern
+    if all(key in data for key in ['rows', 'cols', 'dt', 'data']):
         return represent_opencv_matrix(dumper, data)
     else:
         return dumper.represent_dict(data.items())
@@ -45,26 +71,46 @@ def generate_vins_mono_yaml(kalibr_data, imu_data, file_name):
     resolution = cam0.get('resolution', [640, 480])
     td = cam0.get('timeshift_cam_imu', 0.0)  # Default to 0 if not specified
 
+    distortion_model = cam0.get('distortion_model', 'radtan').lower()
+
+    if distortion_model == 'radtan':
+        model_type = 'PINHOLE'
+        distortion_parameters = {
+            'k1': distortion_coeffs[0],
+            'k2': distortion_coeffs[1],
+            'p1': distortion_coeffs[2],
+            'p2': distortion_coeffs[3]
+        }
+        projection_parameters = {
+            'fx': intrinsics[0],
+            'fy': intrinsics[1],
+            'cx': intrinsics[2],
+            'cy': intrinsics[3]
+        }
+    elif distortion_model == 'equidistant':
+        model_type = 'KANNALA_BRANDT'
+        projection_parameters = {
+            'k2': distortion_coeffs[0],
+            'k3': distortion_coeffs[1],
+            'k4': distortion_coeffs[2],
+            'k5': distortion_coeffs[3],
+            'mu': intrinsics[0],
+            'mv': intrinsics[1],
+            'u0': intrinsics[2],
+            'v0': intrinsics[3]
+        }
+        distortion_parameters = {}
+
     vins_mono_yaml = {
         'imu_topic': imu0.get('rostopic', '/imu0'),
         'image_topic': cam0.get('rostopic', '/cam0/image_raw'),
         'output_path': "/home/shaozu/output/",
-        'model_type': 'PINHOLE',
+        'model_type': model_type,
         'camera_name': 'camera',
         'image_width': resolution[0],
         'image_height': resolution[1],
-        'distortion_parameters': {
-            'k1': distortion_coeffs[0],
-            'k2': distortion_coeffs[1],
-            'p1': distortion_coeffs[2],
-            'p2': distortion_coeffs[3],
-        },
-        'projection_parameters': {
-            'fx': intrinsics[0],
-            'fy': intrinsics[1],
-            'cx': intrinsics[2],
-            'cy': intrinsics[3],
-        },
+        'distortion_parameters': distortion_parameters,
+        'projection_parameters': projection_parameters,
         'estimate_extrinsic': 0,
         'extrinsicRotation': opencv_matrix(R_transposed),
         'extrinsicTranslation': opencv_matrix(t_inverted.reshape(3,1)),
@@ -96,8 +142,6 @@ def generate_vins_mono_yaml(kalibr_data, imu_data, file_name):
         'visualize_camera_size': 0.4
     }
 
-    #yaml.add_representer(dict, represent_dict_order)
-
     with open(file_name, 'w') as outfile:
         outfile.write("%YAML:1.0\n---\n")
         yaml.dump(vins_mono_yaml, outfile, indent=3, default_flow_style=None, sort_keys=False)
@@ -112,11 +156,9 @@ def main():
 
     args = parser.parse_args()
 
-    # Set output file path
     if args.output:
         output_path = args.output
     else:
-        # Save in the same directory as the camera YAML file
         directory = os.path.dirname(args.camera_yaml)
         output_path = os.path.join(directory, 'vins_mono_config.yaml')
 
@@ -127,3 +169,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
