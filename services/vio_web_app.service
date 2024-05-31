@@ -1,0 +1,22 @@
+[Unit]
+Description=VIO Web App
+After=network.target roscore.service
+Requires=network.target roscore.service
+
+[Service]
+#ExecStart=/usr/bin/python3 /home/vio/vio_web_app/app.py
+ExecStart=/bin/bash -c 'source /home/vio/ros_noetic/catkin_ws/install_isolated/setup.bash && exec /usr/bin/python3 /home/vio/vio_web_app/app.py'
+WorkingDirectory=/home/vio/vio_web_app
+StandardOutput=append:/home/vio/logs/web_app_service.log
+StandardError=append:/home/vio/logs/web_app_service.log
+Restart=always
+RestartSec=5
+User=vio
+#Environment="PYTHONUNBUFFERED=1"
+#Environment="ROS_MASTER_URI=http://localhost:11311"
+#Environment="ROS_IP=<raspberry_pi_ip>"
+TimeoutStopSec=10
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target
