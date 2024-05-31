@@ -1,7 +1,7 @@
 [Unit]
 Description=The Visual Inertial Odometry Service (libcamera_ros[ov9281] + mpu6050 + OpenVINS)
-After=network.target
-Requires=network.target
+After=network.target roscore.service
+Requires=network.target roscore.service
 #Wants=network-online.target
 
 [Service]
