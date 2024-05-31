@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>VIO System</title>
+    <script>
+        function fetchOdom() {
+            fetch('/odom')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('odom').innerHTML = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function fetchImage() {
+            fetch('/image')
+                .then(response => response.json())
+                .then(data => {
+                    let img = document.getElementById('image');
+                    img.src = 'data:image/jpeg;base64,' + data.image;
+                });
+        }
+
+        function restartVio() {
+            fetch('/restart_vio', { method: 'POST' });
+        }
+
+        setInterval(fetchOdom, 100);
+        setInterval(fetchImage, 100);
+    </script>
+</head>
+<body>
+    <h1>VIO System Interface</h1>
+    <div>
+        <h2>Odometry Data</h2>
+        <pre id="odom"></pre>
+    </div>
+    <div>
+        <h2>Camera Image</h2>
+        <img id="image" />
+    </div>
+    <button onclick="restartVio()">Restart VIO System</button>
+</body>
+</html>
