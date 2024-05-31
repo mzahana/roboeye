@@ -2,43 +2,219 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>VIO System</title>
+    <title>VIO Web App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .content {
+            margin: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .health-status {
+            font-weight: bold;
+        }
+        .healthy {
+            color: green;
+        }
+        .unhealthy {
+            color: red;
+        }
+    </style>
     <script>
         function fetchOdom() {
             fetch('/odom')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('odom').innerHTML = JSON.stringify(data, null, 2);
-                });
+                    document.getElementById('odom_x').innerText = data.x;
+                    document.getElementById('odom_y').innerText = data.y;
+                    document.getElementById('odom_z').innerText = data.z;
+                    document.getElementById('odom_roll').innerText = data.roll;
+                    document.getElementById('odom_pitch').innerText = data.pitch;
+                    document.getElementById('odom_yaw').innerText = data.yaw;
+                })
+                .catch(error => console.error("Error fetching odometry data:", error));
         }
 
         function fetchImage() {
-            fetch('/image')
+            if (document.getElementById('showImage').checked) {
+                fetch('/image')
+                    .then(response => response.json())
+                    .then(data => {
+                        let img = document.getElementById('image');
+                        img.src = 'data:image/jpeg;base64,' + data.image;
+                    })
+                    .catch(error => console.error("Error fetching image data:", error));
+            } else {
+                document.getElementById('image').src = '';
+            }
+        }
+
+        function updateImageStatus() {
+            let sendImage = document.getElementById('showImage').checked;
+            fetch('/update_image_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ send_image: sendImage }),
+            }).catch(error => console.error("Error updating image status:", error));
+        }
+
+        function fetchSystemStats() {
+            fetch('/system_stats')
                 .then(response => response.json())
                 .then(data => {
-                    let img = document.getElementById('image');
-                    img.src = 'data:image/jpeg;base64,' + data.image;
-                });
+                    document.getElementById('cpu_usage').innerText = data.cpu_usage + '%';
+                    document.getElementById('memory_usage').innerText = data.memory_usage + '%';
+                    document.getElementById('temperature').innerText = data.temperature + '°C';
+                    document.getElementById('rebooting').innerText = data.rebooting ? 'System is rebooting...' : '';
+                })
+                .catch(error => console.error("Error fetching system stats:", error));
+        }
+
+        function fetchHealthStatus() {
+            fetch('/health_status')
+                .then(response => response.json())
+                .then(data => {
+                    const healthStatusElem = document.getElementById('health_status');
+                    healthStatusElem.innerText = data.health_status;
+                    healthStatusElem.className = 'health-status ' + (data.health_status === 'Healthy' ? 'healthy' : 'unhealthy');
+                    document.getElementById('health_reason').innerText = data.health_reason;
+                })
+                .catch(error => console.error("Error fetching health status:", error));
+        }
+
+        function fetchFeaturesCount() {
+            fetch('/features_count')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('features_count').innerText = data.features_count;
+                })
+                .catch(error => console.error("Error fetching features count:", error));
+        }
+
+        function fetchPathLength() {
+            fetch('/path_length')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('path_length').innerText = data.path_length;
+                })
+                .catch(error => console.error("Error fetching path length:", error));
+        }
+
+        function rebootSystem() {
+            resetStats();
+            fetch('/reboot_system', { method: 'POST' })
+                .catch(error => console.error("Error rebooting system:", error));
+        }
+
+        function shutdownSystem() {
+            resetStats();
+            fetch('/shutdown_system', { method: 'POST' })
+                .catch(error => console.error("Error shutting down system:", error));
         }
 
         function restartVio() {
-            fetch('/restart_vio', { method: 'POST' });
+            resetStats();
+            fetch('/restart_vio', { method: 'POST' })
+                .catch(error => console.error("Error restarting VIO service:", error));
         }
 
-        setInterval(fetchOdom, 100);
-        setInterval(fetchImage, 100);
+        function resetStats() {
+            document.getElementById('odom_x').innerText = '';
+            document.getElementById('odom_y').innerText = '';
+            document.getElementById('odom_z').innerText = '';
+            document.getElementById('odom_roll').innerText = '';
+            document.getElementById('odom_pitch').innerText = '';
+            document.getElementById('odom_yaw').innerText = '';
+            document.getElementById('cpu_usage').innerText = '';
+            document.getElementById('memory_usage').innerText = '';
+            document.getElementById('temperature').innerText = '';
+            document.getElementById('health_status').innerText = '';
+            document.getElementById('health_reason').innerText = '';
+            document.getElementById('features_count').innerText = '';
+            document.getElementById('path_length').innerText = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setInterval(fetchOdom, 100);
+            setInterval(fetchImage, 100);
+            setInterval(fetchSystemStats, 1000);
+            setInterval(fetchHealthStatus, 1000);
+            setInterval(fetchFeaturesCount, 1000);
+            setInterval(fetchPathLength, 1000);
+
+            document.getElementById('showImage').addEventListener('change', updateImageStatus);
+        });
     </script>
 </head>
 <body>
-    <h1>VIO System Interface</h1>
-    <div>
-        <h2>Odometry Data</h2>
-        <pre id="odom"></pre>
+    <div class="header">
+        <h1>VIO Web App</h1>
     </div>
-    <div>
-        <h2>Camera Image</h2>
-        <img id="image" />
+    <div class="content">
+        <div class="section">
+            <h2>Monitoring</h2>
+            <label for="showImage">Show Camera Image:</label>
+            <input type="checkbox" id="showImage" />
+            <img id="image" />
+            <div>
+                <h3>Pose (XYZ)</h3>
+                <p>X: <span id="odom_x"></span></p>
+                <p>Y: <span id="odom_y"></span></p>
+                <p>Z: <span id="odom_z"></span></p>
+            </div>
+            <div>
+                <h3>Orientation (Roll, Pitch, Yaw)</h3>
+                <p>Roll: <span id="odom_roll"></span></p>
+                <p>Pitch: <span id="odom_pitch"></span></p>
+                <p>Yaw: <span id="odom_yaw"></span></p>
+            </div>
+            <div>
+                <h3>System Stats</h3>
+                <p>CPU Usage: <span id="cpu_usage"></span></p>
+                <p>Memory Usage: <span id="memory_usage"></span></p>
+                <p>Temperature: <span id="temperature"></span></p>
+                <p id="rebooting"></p>
+            </div>
+            <div>
+                <h3>Traveled Path Length</h3>
+                <p id="path_length"></p>
+            </div>
+            <div>
+                <h3>Health Monitor</h3>
+                <p>Health Status: <span id="health_status" class="health-status"></span></p>
+                <p id="health_reason"></p>
+                <p>Features Count: <span id="features_count"></span></p>
+            </div>
+        </div>
+        <div class="section">
+            <h2>Control</h2>
+            <button class="button" onclick="restartVio()">Restart VIO Service</button>
+            <button class="button" onclick="rebootSystem()">Reboot System</button>
+            <button class="button" onclick="shutdownSystem()">Shutdown System</button>
+        </div>
     </div>
-    <button onclick="restartVio()">Restart VIO System</button>
 </body>
 </html>
