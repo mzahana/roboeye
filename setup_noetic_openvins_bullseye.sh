@@ -189,6 +189,8 @@ if [ "$BUILD_ROS" = true ]; then
                             graphviz \
                             tmux \
                             libpcl-dev \
+                            hostapd \
+                            dnsmasq \
                             && sudo rm -rf /var/lib/apt/lists/* \
                             && sudo apt-get clean
 
@@ -197,6 +199,12 @@ if [ "$BUILD_ROS" = true ]; then
     sudo pip install psutil
     sudo pip install defusedxml
     sudo pip install netifaces
+
+    sudo systemctl stop hostapd
+    sudo systemctl stop dnsmasq
+    sudo systemctl disable hostapd
+    sudo systemctl disable dnsmasq
+
 
     sudo rosdep init
     rosdep update
