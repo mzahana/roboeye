@@ -421,6 +421,17 @@ cp $ROOT/calibration_files/* $HOME/calibration_files/
 #
 print_info "Copying $ROOT/vio_web_app to $HOME" && sleep 1
 cp -R $ROOT/vio_web_app $HOME
+sudo cp $ROOT/wifi_access_point/dhcpcd.conf.ap /etc/
+sudo cp $ROOT/wifi_access_point/dhcpcd.conf.client /etc/
+sudo cp $ROOT/wifi_access_point/dnsmasq.conf /etc/
+sudo cp $ROOT/wifi_access_point/hostapd.conf /etc/hostapd/
+sudo cp $ROOT/wifi_access_point/hostapd /etc/default/
+sudo cp $ROOT/wifi_access_point/ $HOME/scripts/switch_wifi_mode.sh
+
+print_info "You can switch between WiFi  and client modes by using the ~/scripts/switch_wifi_mode.sh"
+print_info "./switch_wifi_mode.sh client"
+print_info "./switch_wifi_mode.sh ap"
+print_warning "This will reboot the system" & sleep 1
 
 #
 # DONE!
