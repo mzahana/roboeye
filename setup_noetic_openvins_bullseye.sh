@@ -426,7 +426,7 @@ sudo cp $ROOT/wifi_access_point/dhcpcd.conf.client /etc/
 sudo cp $ROOT/wifi_access_point/dnsmasq.conf /etc/
 sudo cp $ROOT/wifi_access_point/hostapd.conf /etc/hostapd/
 sudo cp $ROOT/wifi_access_point/hostapd /etc/default/
-sudo cp $ROOT/wifi_access_point/ $HOME/scripts/switch_wifi_mode.sh
+cp $ROOT/wifi_access_point/ $HOME/scripts/switch_wifi_mode.sh
 
 print_info "You can switch between WiFi  and client modes by using the ~/scripts/switch_wifi_mode.sh"
 print_info "./switch_wifi_mode.sh client"
