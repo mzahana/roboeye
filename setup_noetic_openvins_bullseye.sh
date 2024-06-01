@@ -407,6 +407,13 @@ if [ ! -d "${HOME}/calibration_files" ];then
 fi
 cp $ROOT/calibration_files/* $HOME/calibration_files/
 
+
+#
+# Copy Web App
+#
+print_info "Copying $ROOT/vio_web_app to $HOME" && sleep 1
+cp -R $ROOT/vio_web_app $HOME
+
 #
 # DONE!
 #
