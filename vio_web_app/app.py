@@ -3,6 +3,7 @@ import subprocess
 import rospy
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, PointCloud
+from mavros_msgs.msg import State
 import threading
 import base64
 import cv2
@@ -25,6 +26,12 @@ health_status = "Healthy"
 health_reason = ""
 system_rebooting = False
 send_image = False
+VIO_SERVICE="openvins_ov9281_mpu_system.service"
+#VIO_SERVICE="vio_ov9281_mpu_system.service"
+
+# MAVLink data
+mav_odom_data = {}
+mav_state_data = {}
 
 # Function to calculate distance between two points
 def calculate_distance(p1, p2):
@@ -97,10 +104,47 @@ def loop_features_callback(msg):
         health_status = "Healthy"
         health_reason = ""
 
+# Callback for MAVLink odometry data
+def mav_odom_callback(msg):
+    global mav_odom_data
+    position = msg.pose.pose.position
+    orientation = msg.pose.pose.orientation
+
+    mav_odom_data = {
+        'x': position.x,
+        'y': position.y,
+        'z': position.z,
+        'roll': 0,
+        'pitch': 0,
+        'yaw': 0
+    }
+
+    # Compute roll, pitch, yaw from quaternion (orientation)
+    import tf.transformations as tf
+    quaternion = (orientation.x, orientation.y, orientation.z, orientation.w)
+    roll, pitch, yaw = tf.euler_from_quaternion(quaternion)
+    mav_odom_data['roll'] = roll * 180.0 / math.pi
+    mav_odom_data['pitch'] = pitch * 180.0 / math.pi
+    mav_odom_data['yaw'] = yaw * 180.0 / math.pi
+
+# Callback for MAVLink state data
+def mav_state_callback(msg):
+    global mav_state_data
+    mav_state_data = {
+        'connected': msg.connected,
+        'armed': msg.armed,
+        'guided': msg.guided,
+        'manual_input': msg.manual_input,
+        'mode': msg.mode,
+        'system_status': msg.system_status
+    }
+
 def ros_listener():
     rospy.Subscriber('/mavros/odometry/out', Odometry, odom_callback)
     rospy.Subscriber('/image_mono', Image, image_callback)
     rospy.Subscriber('/ov_msckf/loop_feats', PointCloud, loop_features_callback)
+    rospy.Subscriber('/mavros/local_position/odom', Odometry, mav_odom_callback)
+    rospy.Subscriber('/mavros/state', State, mav_state_callback)
     rospy.spin()
 
 @app.route('/')
@@ -133,7 +177,7 @@ def restart_vio():
     health_status = "Healthy"
     health_reason = ""
     # Restart VIO service
-    subprocess.call(['sudo', 'systemctl', 'restart', 'openvins_ov9281_mpu_system.service'])
+    subprocess.call(['sudo', 'systemctl', 'restart', VIO_SERVICE])
     return '', 204
 
 @app.route('/reboot_system', methods=['POST'])
@@ -185,7 +229,7 @@ def get_features_count():
 @app.route('/health_status')
 def get_health_status():
     # Check if the VIO service is running
-    service_status = subprocess.run(['systemctl', 'is-active', '--quiet', 'openvins_ov9281_mpu_system.service'])
+    service_status = subprocess.run(['systemctl', 'is-active', '--quiet', VIO_SERVICE])
     if service_status.returncode != 0:
         return jsonify({'health_status': 'Unhealthy', 'health_reason': 'VIO service not running'})
     return jsonify({'health_status': health_status, 'health_reason': health_reason})
@@ -196,6 +240,14 @@ def get_path_length():
     if total_path_length is None or math.isnan(total_path_length):
         total_path_length = 0.0
     return jsonify({'path_length': total_path_length})
+
+@app.route('/mav_odom')
+def get_mav_odom():
+    return jsonify(mav_odom_data)
+
+@app.route('/mav_state')
+def get_mav_state():
+    return jsonify(mav_state_data)
 
 def run_flask_app():
     app.run(host='0.0.0.0', port=5000)

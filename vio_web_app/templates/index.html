@@ -123,6 +123,34 @@
                 .catch(error => console.error("Error fetching path length:", error));
         }
 
+        function fetchMavOdom() {
+            fetch('/mav_odom')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('mav_odom_x').innerText = data.x;
+                    document.getElementById('mav_odom_y').innerText = data.y;
+                    document.getElementById('mav_odom_z').innerText = data.z;
+                    document.getElementById('mav_odom_roll').innerText = data.roll;
+                    document.getElementById('mav_odom_pitch').innerText = data.pitch;
+                    document.getElementById('mav_odom_yaw').innerText = data.yaw;
+                })
+                .catch(error => console.error("Error fetching MAVLink odometry data:", error));
+        }
+
+        function fetchMavState() {
+            fetch('/mav_state')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('mav_state_connected').innerText = data.connected;
+                    document.getElementById('mav_state_armed').innerText = data.armed;
+                    document.getElementById('mav_state_guided').innerText = data.guided;
+                    document.getElementById('mav_state_manual_input').innerText = data.manual_input;
+                    document.getElementById('mav_state_mode').innerText = data.mode;
+                    document.getElementById('mav_state_system_status').innerText = data.system_status;
+                })
+                .catch(error => console.error("Error fetching MAVLink state data:", error));
+        }
+
         function rebootSystem() {
             resetStats();
             fetch('/reboot_system', { method: 'POST' })
@@ -155,6 +183,18 @@
             document.getElementById('health_reason').innerText = '';
             document.getElementById('features_count').innerText = '';
             document.getElementById('path_length').innerText = '';
+            document.getElementById('mav_odom_x').innerText = '';
+            document.getElementById('mav_odom_y').innerText = '';
+            document.getElementById('mav_odom_z').innerText = '';
+            document.getElementById('mav_odom_roll').innerText = '';
+            document.getElementById('mav_odom_pitch').innerText = '';
+            document.getElementById('mav_odom_yaw').innerText = '';
+            document.getElementById('mav_state_connected').innerText = '';
+            document.getElementById('mav_state_armed').innerText = '';
+            document.getElementById('mav_state_guided').innerText = '';
+            document.getElementById('mav_state_manual_input').innerText = '';
+            document.getElementById('mav_state_mode').innerText = '';
+            document.getElementById('mav_state_system_status').innerText = '';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -164,6 +204,8 @@
             setInterval(fetchHealthStatus, 1000);
             setInterval(fetchFeaturesCount, 1000);
             setInterval(fetchPathLength, 1000);
+            setInterval(fetchMavOdom, 1000);
+            setInterval(fetchMavState, 1000);
 
             document.getElementById('showImage').addEventListener('change', updateImageStatus);
         });
@@ -175,7 +217,7 @@
     </div>
     <div class="content">
         <div class="section">
-            <h2>Monitoring</h2>
+            <h2>VIO Monitoring</h2>
             <label for="showImage">Show Camera Image:</label>
             <input type="checkbox" id="showImage" />
             <img id="image" />
@@ -207,6 +249,30 @@
                 <p>Health Status: <span id="health_status" class="health-status"></span></p>
                 <p id="health_reason"></p>
                 <p>Features Count: <span id="features_count"></span></p>
+            </div>
+        </div>
+        <div class="section">
+            <h2>MAVLink Monitoring</h2>
+            <div>
+                <h3>MAVLink Odometry (XYZ)</h3>
+                <p>X: <span id="mav_odom_x"></span></p>
+                <p>Y: <span id="mav_odom_y"></span></p>
+                <p>Z: <span id="mav_odom_z"></span></p>
+            </div>
+            <div>
+                <h3>MAVLink Orientation (Roll, Pitch, Yaw)</h3>
+                <p>Roll: <span id="mav_odom_roll"></span></p>
+                <p>Pitch: <span id="mav_odom_pitch"></span></p>
+                <p>Yaw: <span id="mav_odom_yaw"></span></p>
+            </div>
+            <div>
+                <h3>MAVLink State</h3>
+                <p>Connected: <span id="mav_state_connected"></span></p>
+                <p>Armed: <span id="mav_state_armed"></span></p>
+                <p>Guided: <span id="mav_state_guided"></span></p>
+                <p>Manual Input: <span id="mav_state_manual_input"></span></p>
+                <p>Mode: <span id="mav_state_mode"></span></p>
+                <p>System Status: <span id="mav_state_system_status"></span></p>
             </div>
         </div>
         <div class="section">
