@@ -1,5 +1,5 @@
 # vins_raspberrypi
-Low cost Visual Inertial Odometry (VIO) software for Raspberry Pi.
+Low cost Visual Inertial Odometry (VIO) system using Raspberry Pi.
 
 # Hardware
 * Raspberry Pi 4B, 4GB RAM
