@@ -1,5 +1,5 @@
-# vins_raspberrypi
-Low cost Visual Inertial Odometry (VIO) system using Raspberry Pi.
+# roboeye
+Low cost Visual Inertial Odometry (VIO) system using Raspberry Pi 4/5.
 
 # Hardware
 * Raspberry Pi 4B, 4GB RAM
@@ -15,7 +15,7 @@ Low cost Visual Inertial Odometry (VIO) system using Raspberry Pi.
 * Clone this pkg in your RPi.
     ```sh
     mkdir -p ~/src
-    cd $HOME/src && git clone https://github.com/mzahana/vins_raspberrypi.git
+    cd $HOME/src && git clone https://github.com/mzahana/roboeye.git
     ```
 * Enable environment variables
     ```sh
