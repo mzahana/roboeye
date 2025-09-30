@@ -2,56 +2,906 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>VIO Web App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIO Monitoring Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        :root {
+            --bg-gradient-start: #0f1419;
+            --bg-gradient-end: #1a1f2e;
+            --header-gradient-start: #1e3a5f;
+            --header-gradient-end: #2d5a7b;
+            --header-border: #3d7ea6;
+            --title-gradient-start: #64b5f6;
+            --title-gradient-end: #42a5f5;
+            --text-primary: #e1e8ed;
+            --text-secondary: #b0bec5;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(100, 181, 246, 0.1);
+            --card-hover-shadow: rgba(100, 181, 246, 0.2);
+            --section-title: #64b5f6;
+            --section-border: rgba(100, 181, 246, 0.3);
+            --subsection-title: #90caf9;
+            --data-border: rgba(255, 255, 255, 0.05);
+            --canvas-bg: #0a0e14;
+            --button-primary-start: #2196F3;
+            --button-primary-end: #1976D2;
+            --button-primary-shadow: rgba(33, 150, 243, 0.3);
+            --button-primary-hover-shadow: rgba(33, 150, 243, 0.4);
+        }
+
+        body.light-mode {
+            --bg-gradient-start: #e3f2fd;
+            --bg-gradient-end: #bbdefb;
+            --header-gradient-start: #1976d2;
+            --header-gradient-end: #1565c0;
+            --header-border: #0d47a1;
+            --title-gradient-start: #ffffff;
+            --title-gradient-end: #e3f2fd;
+            --text-primary: #212121;
+            --text-secondary: #616161;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(33, 150, 243, 0.2);
+            --card-hover-shadow: rgba(33, 150, 243, 0.3);
+            --section-title: #1976d2;
+            --section-border: rgba(33, 150, 243, 0.3);
+            --subsection-title: #1565c0;
+            --data-border: rgba(0, 0, 0, 0.08);
+            --canvas-bg: #f5f5f5;
+            --button-primary-start: #2196F3;
+            --button-primary-end: #1976D2;
+            --button-primary-shadow: rgba(33, 150, 243, 0.3);
+            --button-primary-hover-shadow: rgba(33, 150, 243, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
+
         .header {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid var(--header-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, var(--title-gradient-start) 0%, var(--title-gradient-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .theme-toggle {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
             color: white;
-            text-align: center;
-            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
         }
-        .content {
-            margin: 20px;
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.5);
         }
-        .section {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ddd;
+
+        .theme-toggle:active {
+            transform: scale(0.95);
         }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px var(--card-hover-shadow);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--section-title);
+            border-bottom: 2px solid var(--section-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            margin: 1rem 0 0.5rem;
+            color: var(--subsection-title);
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--data-border);
+        }
+
+        .data-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .data-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .visualization-container {
+            grid-column: 1 / -1;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            margin-bottom: 2rem;
+        }
+
+        .viz-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .viz-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        #threejs-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--canvas-bg);
+            position: relative;
+        }
+
+        .controls-section {
+            grid-column: 1 / -1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
         .button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, var(--button-primary-start) 0%, var(--button-primary-end) 100%);
             color: white;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--button-primary-shadow);
         }
+
         .button:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--button-primary-hover-shadow);
+            background: linear-gradient(135deg, #42a5f5 0%, #2196F3 100%);
         }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button.danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .button.danger:hover {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .button.warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .button.warning:hover {
+            background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .button.small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
         .health-status {
             font-weight: bold;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            display: inline-block;
         }
+
         .healthy {
-            color: green;
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
         }
+
         .unhealthy {
-            color: red;
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-top: 1rem;
+            background: var(--canvas-bg);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .badge.danger {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .badge.warning {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .badge.info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #threejs-container {
+                height: 400px;
+            }
         }
     </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚁 VIO Monitoring Dashboard</h1>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
+            <span id="themeIcon">☀️</span>
+        </button>
+    </div>
+    
+    <div class="container">
+        <div class="visualization-container">
+            <h2>3D Odometry Visualization</h2>
+            <div class="viz-controls">
+                <button class="button small" onclick="resetCamera()">Reset Camera</button>
+                <button class="button small" onclick="clearPath()">Clear Path</button>
+                <button class="button small" onclick="toggleAutoFollow()">
+                    <span id="autoFollowText">Auto-Follow: ON</span>
+                </button>
+                <span class="viz-info">🖱️ Left-click: Rotate | Right-click: Pan | Scroll: Zoom</span>
+            </div>
+            <div id="threejs-container"></div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📷 Camera Feed</h2>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="showImage" />
+                    <label for="showImage">Enable Camera Stream</label>
+                </div>
+                <img id="image" class="image-preview" style="display: none;" />
+            </div>
+
+            <div class="card">
+                <h2>📍 VIO Pose</h2>
+                <div class="data-row">
+                    <span class="data-label">X:</span>
+                    <span class="data-value" id="odom_x">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Y:</span>
+                    <span class="data-value" id="odom_y">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Z:</span>
+                    <span class="data-value" id="odom_z">--</span>
+                </div>
+                
+                <h3>Orientation</h3>
+                <div class="data-row">
+                    <span class="data-label">Roll:</span>
+                    <span class="data-value" id="odom_roll">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Pitch:</span>
+                    <span class="data-value" id="odom_pitch">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Yaw:</span>
+                    <span class="data-value" id="odom_yaw">--</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💻 System Stats</h2>
+                <div class="data-row">
+                    <span class="data-label">CPU Usage:</span>
+                    <span class="data-value" id="cpu_usage">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Memory Usage:</span>
+                    <span class="data-value" id="memory_usage">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Temperature:</span>
+                    <span class="data-value" id="temperature">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Path Length:</span>
+                    <span class="data-value" id="path_length">--</span>
+                </div>
+                <p id="rebooting" style="color: #ff9800; font-weight: 600; margin-top: 1rem;"></p>
+            </div>
+
+            <div class="card">
+                <h2>🏥 Health Monitor</h2>
+                <div class="data-row">
+                    <span class="data-label">Status:</span>
+                    <span id="health_status" class="health-status">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Features:</span>
+                    <span class="data-value" id="features_count">--</span>
+                </div>
+                <p id="health_reason" style="color: #ff9800; margin-top: 1rem; font-style: italic;"></p>
+            </div>
+
+            <div class="card">
+                <h2>📡 MAVLink Odometry</h2>
+                <div class="data-row">
+                    <span class="data-label">X:</span>
+                    <span class="data-value" id="mav_odom_x">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Y:</span>
+                    <span class="data-value" id="mav_odom_y">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Z:</span>
+                    <span class="data-value" id="mav_odom_z">--</span>
+                </div>
+                
+                <h3>Orientation</h3>
+                <div class="data-row">
+                    <span class="data-label">Roll:</span>
+                    <span class="data-value" id="mav_odom_roll">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Pitch:</span>
+                    <span class="data-value" id="mav_odom_pitch">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Yaw:</span>
+                    <span class="data-value" id="mav_odom_yaw">--</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔌 MAVLink State</h2>
+                <div class="data-row">
+                    <span class="data-label">Connected:</span>
+                    <span id="mav_state_connected" class="badge">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Armed:</span>
+                    <span id="mav_state_armed" class="badge">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Guided:</span>
+                    <span id="mav_state_guided" class="badge">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Manual Input:</span>
+                    <span id="mav_state_manual_input" class="badge">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Mode:</span>
+                    <span class="data-value" id="mav_state_mode">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">System Status:</span>
+                    <span class="data-value" id="mav_state_system_status">--</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔋 Battery Status</h2>
+                <div class="data-row">
+                    <span class="data-label">Voltage:</span>
+                    <span class="data-value" id="mav_battery_voltage">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Current:</span>
+                    <span class="data-value" id="mav_battery_current">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Percentage:</span>
+                    <span class="data-value" id="mav_battery_percentage">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Status:</span>
+                    <span id="mav_battery_status" class="badge">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Health:</span>
+                    <span id="mav_battery_health" class="badge">--</span>
+                </div>
+            </div>
+
+            <div class="card controls-section">
+                <h2>⚙️ System Control</h2>
+                <div class="button-group">
+                    <button class="button warning" onclick="restartVio()">Restart VIO Service</button>
+                    <button class="button danger" onclick="rebootSystem()">Reboot System</button>
+                    <button class="button danger" onclick="shutdownSystem()">Shutdown System</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // OrbitControls implementation
+        class OrbitControls {
+            constructor(camera, domElement) {
+                this.camera = camera;
+                this.domElement = domElement;
+                this.target = new THREE.Vector3(0, 0, 0);
+                this.enabled = true;
+                this.minDistance = 1;
+                this.maxDistance = 100;
+                
+                this.rotateSpeed = 1.0;
+                this.panSpeed = 1.0;
+                this.zoomSpeed = 1.0;
+
+                this.spherical = new THREE.Spherical();
+                this.sphericalDelta = new THREE.Spherical();
+                this.panOffset = new THREE.Vector3();
+                this.scale = 1;
+
+                this.isRotating = false;
+                this.isPanning = false;
+                this.rotateStart = new THREE.Vector2();
+                this.rotateEnd = new THREE.Vector2();
+                this.rotateDelta = new THREE.Vector2();
+                this.panStart = new THREE.Vector2();
+                this.panEnd = new THREE.Vector2();
+                this.panDelta = new THREE.Vector2();
+
+                this.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
+                this.domElement.addEventListener('wheel', this.onMouseWheel.bind(this), false);
+                this.domElement.addEventListener('contextmenu', (e) => e.preventDefault(), false);
+            }
+
+            onMouseDown(event) {
+                if (!this.enabled) return;
+
+                if (event.button === 0) {
+                    this.isRotating = true;
+                    this.rotateStart.set(event.clientX, event.clientY);
+                } else if (event.button === 2) {
+                    this.isPanning = true;
+                    this.panStart.set(event.clientX, event.clientY);
+                }
+
+                document.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+                document.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+            }
+
+            onMouseMove(event) {
+                if (!this.enabled) return;
+
+                if (this.isRotating) {
+                    this.rotateEnd.set(event.clientX, event.clientY);
+                    this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart).multiplyScalar(this.rotateSpeed);
+
+                    const element = this.domElement;
+                    this.sphericalDelta.theta -= 2 * Math.PI * this.rotateDelta.x / element.clientHeight;
+                    this.sphericalDelta.phi -= 2 * Math.PI * this.rotateDelta.y / element.clientHeight;
+
+                    this.rotateStart.copy(this.rotateEnd);
+                } else if (this.isPanning) {
+                    this.panEnd.set(event.clientX, event.clientY);
+                    this.panDelta.subVectors(this.panEnd, this.panStart).multiplyScalar(this.panSpeed);
+
+                    this.pan(this.panDelta.x, this.panDelta.y);
+                    this.panStart.copy(this.panEnd);
+                }
+
+                this.update();
+            }
+
+            onMouseUp() {
+                this.isRotating = false;
+                this.isPanning = false;
+                document.removeEventListener('mousemove', this.onMouseMove.bind(this));
+                document.removeEventListener('mouseup', this.onMouseUp.bind(this));
+            }
+
+            onMouseWheel(event) {
+                if (!this.enabled) return;
+                event.preventDefault();
+
+                if (event.deltaY < 0) {
+                    this.scale /= 0.95;
+                } else if (event.deltaY > 0) {
+                    this.scale *= 0.95;
+                }
+
+                this.update();
+            }
+
+            pan(deltaX, deltaY) {
+                const offset = new THREE.Vector3();
+                const element = this.domElement;
+
+                offset.copy(this.camera.position).sub(this.target);
+                let targetDistance = offset.length();
+
+                targetDistance *= Math.tan((this.camera.fov / 2) * Math.PI / 180.0);
+
+                const panLeft = new THREE.Vector3();
+                const panUp = new THREE.Vector3();
+
+                panLeft.setFromMatrixColumn(this.camera.matrix, 0);
+                panLeft.multiplyScalar(-2 * deltaX * targetDistance / element.clientHeight);
+
+                panUp.setFromMatrixColumn(this.camera.matrix, 1);
+                panUp.multiplyScalar(2 * deltaY * targetDistance / element.clientHeight);
+
+                this.panOffset.add(panLeft).add(panUp);
+                this.update();
+            }
+
+            update() {
+                const offset = new THREE.Vector3();
+                offset.copy(this.camera.position).sub(this.target);
+
+                this.spherical.setFromVector3(offset);
+                this.spherical.theta += this.sphericalDelta.theta;
+                this.spherical.phi += this.sphericalDelta.phi;
+                this.spherical.phi = Math.max(0.01, Math.min(Math.PI - 0.01, this.spherical.phi));
+
+                this.spherical.radius *= this.scale;
+                this.spherical.radius = Math.max(this.minDistance, Math.min(this.maxDistance, this.spherical.radius));
+
+                this.target.add(this.panOffset);
+
+                offset.setFromSpherical(this.spherical);
+                this.camera.position.copy(this.target).add(offset);
+                this.camera.lookAt(this.target);
+
+                this.sphericalDelta.set(0, 0, 0);
+                this.panOffset.set(0, 0, 0);
+                this.scale = 1;
+            }
+
+            reset() {
+                this.target.set(0, 0, 0);
+                this.camera.position.set(8, 8, 8);
+                this.camera.lookAt(0, 0, 0);
+                this.update();
+            }
+        }
+
+        // Three.js 3D Visualization
+        let scene, camera, renderer, controls, pathLine, deviceFrame, originFrame;
+        let pathPoints = [];
+        const maxPathPoints = 1000;
+        let autoFollow = true;
+
+        function init3D() {
+            scene = new THREE.Scene();
+            updateSceneBackground();
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / 600, 0.1, 1000);
+            camera.position.set(8, 8, 8);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            const container = document.getElementById('threejs-container');
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            // Initialize OrbitControls
+            controls = new OrbitControls(camera, renderer.domElement);
+
+            // Grid
+            const gridHelper = new THREE.GridHelper(20, 20, 0x2196F3, 0x1a1f2e);
+            scene.add(gridHelper);
+
+            // Origin coordinate frame (fixed at origin)
+            originFrame = createCoordinateFrame(1.0, 0.15);
+            scene.add(originFrame);
+
+            // Device coordinate frame (moves with device)
+            deviceFrame = createCoordinateFrame(0.5, 0.1);
+            scene.add(deviceFrame);
+
+            // Path line
+            const pathGeometry = new THREE.BufferGeometry();
+            const pathMaterial = new THREE.LineBasicMaterial({ color: 0x64b5f6, linewidth: 2 });
+            pathLine = new THREE.Line(pathGeometry, pathMaterial);
+            scene.add(pathLine);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            window.addEventListener('resize', onWindowResize);
+            animate();
+        }
+
+        function createCoordinateFrame(length, thickness) {
+            const frame = new THREE.Group();
+
+            // X-axis (Red)
+            const xGeometry = new THREE.CylinderGeometry(thickness * 0.3, thickness * 0.3, length, 8);
+            const xMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const xAxis = new THREE.Mesh(xGeometry, xMaterial);
+            xAxis.rotation.z = -Math.PI / 2;
+            xAxis.position.x = length / 2;
+            
+            const xConeGeometry = new THREE.ConeGeometry(thickness * 0.6, thickness * 2, 8);
+            const xCone = new THREE.Mesh(xConeGeometry, xMaterial);
+            xCone.rotation.z = -Math.PI / 2;
+            xCone.position.x = length;
+            
+            frame.add(xAxis);
+            frame.add(xCone);
+
+            // Y-axis (Green)
+            const yGeometry = new THREE.CylinderGeometry(thickness * 0.3, thickness * 0.3, length, 8);
+            const yMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const yAxis = new THREE.Mesh(yGeometry, yMaterial);
+            yAxis.position.y = length / 2;
+            
+            const yConeGeometry = new THREE.ConeGeometry(thickness * 0.6, thickness * 2, 8);
+            const yCone = new THREE.Mesh(yConeGeometry, yMaterial);
+            yCone.position.y = length;
+            
+            frame.add(yAxis);
+            frame.add(yCone);
+
+            // Z-axis (Blue)
+            const zGeometry = new THREE.CylinderGeometry(thickness * 0.3, thickness * 0.3, length, 8);
+            const zMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+            const zAxis = new THREE.Mesh(zGeometry, zMaterial);
+            zAxis.rotation.x = Math.PI / 2;
+            zAxis.position.z = length / 2;
+            
+            const zConeGeometry = new THREE.ConeGeometry(thickness * 0.6, thickness * 2, 8);
+            const zCone = new THREE.Mesh(zConeGeometry, zMaterial);
+            zCone.rotation.x = Math.PI / 2;
+            zCone.position.z = length;
+            
+            frame.add(zAxis);
+            frame.add(zCone);
+
+            return frame;
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('threejs-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function updatePath(x, y, z, roll, pitch, yaw) {
+            // Update position (swap Y and Z for better visualization)
+            pathPoints.push(new THREE.Vector3(x, z, -y));
+            
+            if (pathPoints.length > maxPathPoints) {
+                pathPoints.shift();
+            }
+
+            pathLine.geometry.setFromPoints(pathPoints);
+
+            // Update device frame position and orientation
+            deviceFrame.position.set(x, z, -y);
+            
+            // Apply rotation (convert degrees to radians and apply in correct order)
+            deviceFrame.rotation.set(0, 0, 0);
+            deviceFrame.rotateX(roll * Math.PI / 180);
+            deviceFrame.rotateY(yaw * Math.PI / 180);
+            deviceFrame.rotateZ(-pitch * Math.PI / 180);
+
+            // Auto-follow camera
+            if (autoFollow && pathPoints.length > 10) {
+                const lastPoint = pathPoints[pathPoints.length - 1];
+                controls.target.copy(lastPoint);
+                
+                const offset = new THREE.Vector3();
+                offset.copy(camera.position).sub(controls.target);
+                const distance = offset.length();
+                
+                if (distance < 2 || distance > 20) {
+                    camera.position.set(
+                        lastPoint.x + 8,
+                        lastPoint.y + 8,
+                        lastPoint.z + 8
+                    );
+                }
+                
+                controls.update();
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        function resetCamera() {
+            controls.reset();
+        }
+
+        function clearPath() {
+            pathPoints = [];
+            pathLine.geometry.setFromPoints(pathPoints);
+        }
+
+        function toggleAutoFollow() {
+            autoFollow = !autoFollow;
+            document.getElementById('autoFollowText').innerText = 'Auto-Follow: ' + (autoFollow ? 'ON' : 'OFF');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const themeIcon = document.getElementById('themeIcon');
+            const isLightMode = document.body.classList.contains('light-mode');
+            themeIcon.innerText = isLightMode ? '🌙' : '☀️';
+            
+            // Save preference
+            localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+            
+            // Update 3D scene background
+            updateSceneBackground();
+        }
+
+        function updateSceneBackground() {
+            const isLightMode = document.body.classList.contains('light-mode');
+            scene.background = new THREE.Color(isLightMode ? 0xf5f5f5 : 0x0a0e14);
+        }
+
+        function loadThemePreference() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeIcon').innerText = '🌙';
+            }
+        }
+
+        // Data fetching functions
         function fetchOdom() {
             fetch('/odom')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('odom_x').innerText = data.x;
-                    document.getElementById('odom_y').innerText = data.y;
-                    document.getElementById('odom_z').innerText = data.z;
-                    document.getElementById('odom_roll').innerText = data.roll;
-                    document.getElementById('odom_pitch').innerText = data.pitch;
-                    document.getElementById('odom_yaw').innerText = data.yaw;
+                    document.getElementById('odom_x').innerText = data.x !== undefined ? data.x.toFixed(3) : '--';
+                    document.getElementById('odom_y').innerText = data.y !== undefined ? data.y.toFixed(3) : '--';
+                    document.getElementById('odom_z').innerText = data.z !== undefined ? data.z.toFixed(3) : '--';
+                    document.getElementById('odom_roll').innerText = data.roll !== undefined ? data.roll.toFixed(2) + '°' : '--';
+                    document.getElementById('odom_pitch').innerText = data.pitch !== undefined ? data.pitch.toFixed(2) + '°' : '--';
+                    document.getElementById('odom_yaw').innerText = data.yaw !== undefined ? data.yaw.toFixed(2) + '°' : '--';
+                    
+                    if (data.x !== undefined && data.y !== undefined && data.z !== undefined) {
+                        updatePath(data.x, data.y, data.z, data.roll || 0, data.pitch || 0, data.yaw || 0);
+                    }
                 })
                 .catch(error => console.error("Error fetching odometry data:", error));
         }
@@ -62,11 +912,14 @@
                     .then(response => response.json())
                     .then(data => {
                         let img = document.getElementById('image');
-                        img.src = 'data:image/jpeg;base64,' + data.image;
+                        if (data.image) {
+                            img.src = 'data:image/jpeg;base64,' + data.image;
+                            img.style.display = 'block';
+                        }
                     })
                     .catch(error => console.error("Error fetching image data:", error));
             } else {
-                document.getElementById('image').src = '';
+                document.getElementById('image').style.display = 'none';
             }
         }
 
@@ -88,7 +941,7 @@
                     document.getElementById('cpu_usage').innerText = data.cpu_usage + '%';
                     document.getElementById('memory_usage').innerText = data.memory_usage + '%';
                     document.getElementById('temperature').innerText = data.temperature + '°C';
-                    document.getElementById('rebooting').innerText = data.rebooting ? 'System is rebooting...' : '';
+                    document.getElementById('rebooting').innerText = data.rebooting ? '⚠️ System is rebooting...' : '';
                 })
                 .catch(error => console.error("Error fetching system stats:", error));
         }
@@ -98,9 +951,9 @@
                 .then(response => response.json())
                 .then(data => {
                     const healthStatusElem = document.getElementById('health_status');
-                    healthStatusElem.innerText = data.health_status;
+                    healthStatusElem.innerText = data.health_status || '--';
                     healthStatusElem.className = 'health-status ' + (data.health_status === 'Healthy' ? 'healthy' : 'unhealthy');
-                    document.getElementById('health_reason').innerText = data.health_reason;
+                    document.getElementById('health_reason').innerText = data.health_reason || '';
                 })
                 .catch(error => console.error("Error fetching health status:", error));
         }
@@ -109,7 +962,7 @@
             fetch('/features_count')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('features_count').innerText = data.features_count;
+                    document.getElementById('features_count').innerText = data.features_count || '--';
                 })
                 .catch(error => console.error("Error fetching features count:", error));
         }
@@ -118,7 +971,7 @@
             fetch('/path_length')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('path_length').innerText = data.path_length;
+                    document.getElementById('path_length').innerText = data.path_length ? data.path_length.toFixed(3) + ' m' : '--';
                 })
                 .catch(error => console.error("Error fetching path length:", error));
         }
@@ -127,12 +980,12 @@
             fetch('/mav_odom')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('mav_odom_x').innerText = data.x;
-                    document.getElementById('mav_odom_y').innerText = data.y;
-                    document.getElementById('mav_odom_z').innerText = data.z;
-                    document.getElementById('mav_odom_roll').innerText = data.roll;
-                    document.getElementById('mav_odom_pitch').innerText = data.pitch;
-                    document.getElementById('mav_odom_yaw').innerText = data.yaw;
+                    document.getElementById('mav_odom_x').innerText = data.x !== undefined ? data.x.toFixed(3) : '--';
+                    document.getElementById('mav_odom_y').innerText = data.y !== undefined ? data.y.toFixed(3) : '--';
+                    document.getElementById('mav_odom_z').innerText = data.z !== undefined ? data.z.toFixed(3) : '--';
+                    document.getElementById('mav_odom_roll').innerText = data.roll !== undefined ? data.roll.toFixed(2) + '°' : '--';
+                    document.getElementById('mav_odom_pitch').innerText = data.pitch !== undefined ? data.pitch.toFixed(2) + '°' : '--';
+                    document.getElementById('mav_odom_yaw').innerText = data.yaw !== undefined ? data.yaw.toFixed(2) + '°' : '--';
                 })
                 .catch(error => console.error("Error fetching MAVLink odometry data:", error));
         }
@@ -141,63 +994,91 @@
             fetch('/mav_state')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('mav_state_connected').innerText = data.connected;
-                    document.getElementById('mav_state_armed').innerText = data.armed;
-                    document.getElementById('mav_state_guided').innerText = data.guided;
-                    document.getElementById('mav_state_manual_input').innerText = data.manual_input;
-                    document.getElementById('mav_state_mode').innerText = data.mode;
-                    document.getElementById('mav_state_system_status').innerText = data.system_status;
+                    setBadge('mav_state_connected', data.connected);
+                    setBadge('mav_state_armed', data.armed);
+                    setBadge('mav_state_guided', data.guided);
+                    setBadge('mav_state_manual_input', data.manual_input);
+                    document.getElementById('mav_state_mode').innerText = data.mode || '--';
+                    document.getElementById('mav_state_system_status').innerText = data.system_status || '--';
                 })
                 .catch(error => console.error("Error fetching MAVLink state data:", error));
         }
 
+        function setBadge(elementId, value) {
+            const elem = document.getElementById(elementId);
+            elem.innerText = value !== undefined ? (value ? 'Yes' : 'No') : '--';
+            elem.className = 'badge ' + (value ? 'success' : 'danger');
+        }
+
+        function fetchMavBattery() {
+            fetch('/mav_battery')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('mav_battery_voltage').innerText = data.voltage !== undefined ? data.voltage.toFixed(2) + ' V' : '--';
+                    document.getElementById('mav_battery_current').innerText = data.current !== undefined ? data.current.toFixed(2) + ' A' : '--';
+                    document.getElementById('mav_battery_percentage').innerText = data.percentage !== undefined ? data.percentage.toFixed(1) + '%' : '--';
+                    
+                    const statusElem = document.getElementById('mav_battery_status');
+                    statusElem.innerText = getBatteryStatus(data.status);
+                    statusElem.className = 'badge ' + getBatteryStatusClass(data.status);
+                    
+                    const healthElem = document.getElementById('mav_battery_health');
+                    healthElem.innerText = getBatteryHealth(data.health);
+                    healthElem.className = 'badge ' + getBatteryHealthClass(data.health);
+                })
+                .catch(error => console.error("Error fetching MAVLink battery data:", error));
+        }
+
+        function getBatteryStatus(status) {
+            const statuses = ['Unknown', 'Charging', 'Discharging', 'Not Charging', 'Full'];
+            return statuses[status] || 'Unknown';
+        }
+
+        function getBatteryStatusClass(status) {
+            if (status === 1) return 'info';
+            if (status === 4) return 'success';
+            if (status === 2) return 'warning';
+            return 'danger';
+        }
+
+        function getBatteryHealth(health) {
+            const healths = ['Unknown', 'Good', 'Overheat', 'Dead', 'Overvoltage', 'Unspec Failure', 'Cold', 'Watchdog Timer Expire', 'Safety Timer Expire'];
+            return healths[health] || 'Unknown';
+        }
+
+        function getBatteryHealthClass(health) {
+            if (health === 1) return 'success';
+            if (health === 6) return 'info';
+            return 'danger';
+        }
+
         function rebootSystem() {
-            resetStats();
-            fetch('/reboot_system', { method: 'POST' })
-                .catch(error => console.error("Error rebooting system:", error));
+            if (confirm('Are you sure you want to reboot the system?')) {
+                fetch('/reboot_system', { method: 'POST' })
+                    .catch(error => console.error("Error rebooting system:", error));
+            }
         }
 
         function shutdownSystem() {
-            resetStats();
-            fetch('/shutdown_system', { method: 'POST' })
-                .catch(error => console.error("Error shutting down system:", error));
+            if (confirm('Are you sure you want to shutdown the system?')) {
+                fetch('/shutdown_system', { method: 'POST' })
+                    .catch(error => console.error("Error shutting down system:", error));
+            }
         }
 
         function restartVio() {
-            resetStats();
-            fetch('/restart_vio', { method: 'POST' })
-                .catch(error => console.error("Error restarting VIO service:", error));
+            if (confirm('Are you sure you want to restart the VIO service?')) {
+                pathPoints = [];
+                fetch('/restart_vio', { method: 'POST' })
+                    .catch(error => console.error("Error restarting VIO service:", error));
+            }
         }
 
-        function resetStats() {
-            document.getElementById('odom_x').innerText = '';
-            document.getElementById('odom_y').innerText = '';
-            document.getElementById('odom_z').innerText = '';
-            document.getElementById('odom_roll').innerText = '';
-            document.getElementById('odom_pitch').innerText = '';
-            document.getElementById('odom_yaw').innerText = '';
-            document.getElementById('cpu_usage').innerText = '';
-            document.getElementById('memory_usage').innerText = '';
-            document.getElementById('temperature').innerText = '';
-            document.getElementById('health_status').innerText = '';
-            document.getElementById('health_reason').innerText = '';
-            document.getElementById('features_count').innerText = '';
-            document.getElementById('path_length').innerText = '';
-            document.getElementById('mav_odom_x').innerText = '';
-            document.getElementById('mav_odom_y').innerText = '';
-            document.getElementById('mav_odom_z').innerText = '';
-            document.getElementById('mav_odom_roll').innerText = '';
-            document.getElementById('mav_odom_pitch').innerText = '';
-            document.getElementById('mav_odom_yaw').innerText = '';
-            document.getElementById('mav_state_connected').innerText = '';
-            document.getElementById('mav_state_armed').innerText = '';
-            document.getElementById('mav_state_guided').innerText = '';
-            document.getElementById('mav_state_manual_input').innerText = '';
-            document.getElementById('mav_state_mode').innerText = '';
-            document.getElementById('mav_state_system_status').innerText = '';
-        }
-
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            loadThemePreference();
+            init3D();
+            
             setInterval(fetchOdom, 100);
             setInterval(fetchImage, 100);
             setInterval(fetchSystemStats, 1000);
@@ -206,81 +1087,10 @@
             setInterval(fetchPathLength, 1000);
             setInterval(fetchMavOdom, 1000);
             setInterval(fetchMavState, 1000);
+            setInterval(fetchMavBattery, 1000);
 
             document.getElementById('showImage').addEventListener('change', updateImageStatus);
         });
     </script>
-</head>
-<body>
-    <div class="header">
-        <h1>VIO Web App</h1>
-    </div>
-    <div class="content">
-        <div class="section">
-            <h2>VIO Monitoring</h2>
-            <label for="showImage">Show Camera Image:</label>
-            <input type="checkbox" id="showImage" />
-            <img id="image" />
-            <div>
-                <h3>Pose (XYZ)</h3>
-                <p>X: <span id="odom_x"></span></p>
-                <p>Y: <span id="odom_y"></span></p>
-                <p>Z: <span id="odom_z"></span></p>
-            </div>
-            <div>
-                <h3>Orientation (Roll, Pitch, Yaw)</h3>
-                <p>Roll: <span id="odom_roll"></span></p>
-                <p>Pitch: <span id="odom_pitch"></span></p>
-                <p>Yaw: <span id="odom_yaw"></span></p>
-            </div>
-            <div>
-                <h3>System Stats</h3>
-                <p>CPU Usage: <span id="cpu_usage"></span></p>
-                <p>Memory Usage: <span id="memory_usage"></span></p>
-                <p>Temperature: <span id="temperature"></span></p>
-                <p id="rebooting"></p>
-            </div>
-            <div>
-                <h3>Traveled Path Length</h3>
-                <p id="path_length"></p>
-            </div>
-            <div>
-                <h3>Health Monitor</h3>
-                <p>Health Status: <span id="health_status" class="health-status"></span></p>
-                <p id="health_reason"></p>
-                <p>Features Count: <span id="features_count"></span></p>
-            </div>
-        </div>
-        <div class="section">
-            <h2>MAVLink Monitoring</h2>
-            <div>
-                <h3>MAVLink Odometry (XYZ)</h3>
-                <p>X: <span id="mav_odom_x"></span></p>
-                <p>Y: <span id="mav_odom_y"></span></p>
-                <p>Z: <span id="mav_odom_z"></span></p>
-            </div>
-            <div>
-                <h3>MAVLink Orientation (Roll, Pitch, Yaw)</h3>
-                <p>Roll: <span id="mav_odom_roll"></span></p>
-                <p>Pitch: <span id="mav_odom_pitch"></span></p>
-                <p>Yaw: <span id="mav_odom_yaw"></span></p>
-            </div>
-            <div>
-                <h3>MAVLink State</h3>
-                <p>Connected: <span id="mav_state_connected"></span></p>
-                <p>Armed: <span id="mav_state_armed"></span></p>
-                <p>Guided: <span id="mav_state_guided"></span></p>
-                <p>Manual Input: <span id="mav_state_manual_input"></span></p>
-                <p>Mode: <span id="mav_state_mode"></span></p>
-                <p>System Status: <span id="mav_state_system_status"></span></p>
-            </div>
-        </div>
-        <div class="section">
-            <h2>Control</h2>
-            <button class="button" onclick="restartVio()">Restart VIO Service</button>
-            <button class="button" onclick="rebootSystem()">Reboot System</button>
-            <button class="button" onclick="shutdownSystem()">Shutdown System</button>
-        </div>
-    </div>
 </body>
 </html>
