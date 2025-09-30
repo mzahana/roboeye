@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 import subprocess
 import rospy
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Image, PointCloud
+from sensor_msgs.msg import Image, PointCloud, BatteryState
 from mavros_msgs.msg import State
 import threading
 import base64
@@ -26,12 +26,14 @@ health_status = "Healthy"
 health_reason = ""
 system_rebooting = False
 send_image = False
-VIO_SERVICE="openvins_ov9281_mpu_system.service"
+VIO_SERVICE = "openvins_ov9281_mpu_system.service"
 #VIO_SERVICE="vio_ov9281_mpu_system.service"
+
 
 # MAVLink data
 mav_odom_data = {}
 mav_state_data = {}
+mav_battery_data = {}
 
 # Function to calculate distance between two points
 def calculate_distance(p1, p2):
@@ -64,9 +66,9 @@ def odom_callback(msg):
     import tf.transformations as tf
     quaternion = (orientation.x, orientation.y, orientation.z, orientation.w)
     roll, pitch, yaw = tf.euler_from_quaternion(quaternion)
-    odom_data['roll'] = roll*180.0/math.pi
-    odom_data['pitch'] = pitch*180.0/math.pi
-    odom_data['yaw'] = yaw*180.0/math.pi
+    odom_data['roll'] = roll * 180.0 / math.pi
+    odom_data['pitch'] = pitch * 180.0 / math.pi
+    odom_data['yaw'] = yaw * 180.0 / math.pi
 
     # Health check based on odometry values
     if abs(position.x) > 1000 or abs(position.y) > 1000 or abs(position.z) > 1000:
@@ -139,12 +141,24 @@ def mav_state_callback(msg):
         'system_status': msg.system_status
     }
 
+# Callback for MAVLink battery data
+def mav_battery_callback(msg):
+    global mav_battery_data
+    mav_battery_data = {
+        'voltage': msg.voltage,
+        'current': msg.current,
+        'percentage': msg.percentage*100.0,
+        'status': msg.power_supply_status,
+        'health': msg.power_supply_health
+    }
+
 def ros_listener():
     rospy.Subscriber('/mavros/odometry/out', Odometry, odom_callback)
     rospy.Subscriber('/image_mono', Image, image_callback)
     rospy.Subscriber('/ov_msckf/loop_feats', PointCloud, loop_features_callback)
     rospy.Subscriber('/mavros/local_position/odom', Odometry, mav_odom_callback)
     rospy.Subscriber('/mavros/state', State, mav_state_callback)
+    rospy.Subscriber('/mavros/battery', BatteryState, mav_battery_callback)
     rospy.spin()
 
 @app.route('/')
@@ -248,6 +262,10 @@ def get_mav_odom():
 @app.route('/mav_state')
 def get_mav_state():
     return jsonify(mav_state_data)
+
+@app.route('/mav_battery')
+def get_mav_battery():
+    return jsonify(mav_battery_data)
 
 def run_flask_app():
     app.run(host='0.0.0.0', port=5000)
