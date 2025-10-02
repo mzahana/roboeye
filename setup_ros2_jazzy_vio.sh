@@ -20,6 +20,8 @@ else
 fi
 
 
+#References: https://docs.ros.org/en/jazzy/Installation/Alternatives/Ubuntu-Development-Setup.html
+# Ref2: https://markuspetermann.net/Linux/Build_ROS_2_on_debian.md
 locale  # check for UTF-8
 
 sudo apt update && sudo apt install locales -y
@@ -178,6 +180,16 @@ colcon build --paths src/mins/mins
 colcon build --paths src/mins/mins_data
 source install/setup.bash
 colcon build --paths src/mins/mins_eval
+
+
+#
+# Clone VINS-Fusion-ROS2-jazzy
+#
+mkdir -p vinsfusion_ws/src
+cd $HOME/vinsfusion_ws/src
+git clone https://github.com/mzahana/VINS-Fusion-ROS2-jazzy.git -b ros2_jazzy
+cd $HOME/vinsfusion_ws/
+colcon build
 
 #
 # Create config folder which contins MPU and YAML config files
